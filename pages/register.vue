@@ -17,7 +17,7 @@
       </v-card-text>
       <v-card-actions class="text-right">
         <v-spacer/>
-        <v-btn :disabled="!validateFields" :loading="loading" class="text-right" color="success" text
+        <v-btn :loading="loading" :disabled="!validateFields" class="text-right" color="success" text
                @click.stop="registration">
           <v-icon left>
             mdi-account-plus
@@ -46,10 +46,7 @@ export default {
       password: '',
       firstName: '',
       lastName: '',
-      loading: false,
-      text: '',
-      success: false,
-      error: false
+      loading: false
     }
   },
   computed: {
@@ -70,7 +67,7 @@ export default {
         lastName: this.lastName
       }).then(() => {
         this.loading = false
-        this.text = 'Registration success'
+        this.$router.push('/')
       }).catch((e) => {
         this.loading = false
         this.text = e
