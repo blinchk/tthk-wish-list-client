@@ -1,4 +1,4 @@
-# frontend
+# Wish List
 
 ## Build Setup
 
