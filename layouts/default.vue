@@ -58,7 +58,7 @@
       </v-btn>
     </v-app-bar>
     <v-main>
-      <v-container>
+      <v-container fill-height>
         <nuxt />
       </v-container>
     </v-main>
@@ -105,12 +105,17 @@ export default {
           icon: 'mdi-chart-bubble',
           title: 'Inspire',
           to: '/inspire'
+        },
+        {
+          icon: 'mdi-account-plus',
+          title: 'Register',
+          to: '/register'
         }
       ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Vuetify.js'
+      title: 'Wish List'
     }
   }
 }
