@@ -5,24 +5,27 @@
       <v-card-text>
         <v-row>
           <v-col cols="6">
-            <v-text-field v-model="firstName" label="First Name"/>
+            <v-text-field v-model="firstName" :rules="rules.name" label="First Name" prepend-icon="mdi-account"/>
           </v-col>
           <v-col cols="6">
             <v-text-field v-model="lastName" label="Last Name"/>
           </v-col>
         </v-row>
-        <v-text-field v-model="username" label="E-mail" type="email"/>
-        <v-text-field v-model="password" label="Password" type="password"/>
+        <v-text-field v-model="username" :rules="rules.email" label="E-mail" prepend-icon="mdi-at" type="email"/>
+        <v-text-field v-model="password" :rules="rules.password" label="Password" prepend-icon="mdi-lock"
+                      type="password"/>
       </v-card-text>
       <v-card-actions class="text-right">
         <v-spacer/>
-        <v-btn class="text-right" color="success" text>
+        <v-btn :disabled="!validateFields" :loading="loading" class="text-right" color="success" text
+               @click.stop="registration">
           <v-icon left>
             mdi-account-plus
           </v-icon>
           Sign Up
         </v-btn>
       </v-card-actions>
+      <v-snackbar v-model="status" color="success" right>{{ text }}</v-snackbar>
     </v-card>
   </v-layout>
 </template>
@@ -30,12 +33,54 @@
 <script>
 export default {
   name: 'Register',
-  data () {
+  data() {
     return {
+      validationText: '',
+      rules: {
+        name: [val => (val || '').length > 0 || 'This field is required!'],
+        password: [val => this.validPass(val) || this.validationText],
+        email: [val => this.validEmail(val) || 'Invalid email!']
+      },
       username: '',
       password: '',
       firstName: '',
-      lastName: ''
+      lastName: '',
+      loading: false,
+      text: '',
+      status: false
+    }
+  },
+  computed: {
+    validateFields() {
+      return this.validPass(this.password) && this.validEmail(this.username) && this.validName(this.firstName)
+    }
+  },
+  methods: {
+    async registration() {
+      this.loading = true
+      await new Promise(resolve => setTimeout(resolve, 3000))
+      this.loading = false
+      this.text = 'Registration success'
+      this.status = true
+      await new Promise(resolve => setTimeout(resolve, 4000))
+      this.status = false
+    },
+    validEmail: function (email) {
+      let re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
+    },
+    validPass: function (password) {
+      if (password.length === 0) {
+        this.validationText = 'This field is required!'
+        return false
+      } else if (password.length < 8) {
+        this.validationText = 'The password must be at least 8 characters long'
+        return false
+      }
+      return true
+    },
+    validName: function (name) {
+      return name.length >= 2
     }
   }
 }
