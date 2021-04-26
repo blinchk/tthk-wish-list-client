@@ -1,12 +1,16 @@
-FROM node
-RUN mkdir -p /usr/src/nuxt-app
-WORKDIR /usr/src/nuxt-app
-RUN apk update && apk upgrade
-RUN apk add git
-COPY . /usr/src/nuxt-app/
-RUN npm install
-RUN npm run build
-EXPOSE 5000
-ENV NUXT_HOST=0.0.0.0
-ENV NUXT_PORT=5000
-CMD [ "npm", "start" ]
+FROM node:10-alpine
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+COPY package.json /usr/src/app/
+COPY yarn.lock /usr/src/app/
+RUN yarn install
+ENV NODE_ENV production
+ENV NUXT_HOST 0.0.0.0
+ENV NUXT_PORT 3000
+COPY . /usr/src/app
+RUN yarn build
+RUN yarn cache clean
+
+EXPOSE 3000
+CMD [ "yarn", "start" ]
