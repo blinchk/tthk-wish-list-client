@@ -44,7 +44,13 @@ export default {
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {},
+  axios: {
+    proxy: true
+  },
+
+  proxy: {
+    '/api/': { target: 'https://wish-api.bredbrains.tech/', pathRewrite: {'^/api/': ''}, changeOrigin: true }
+  },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {

@@ -25,12 +25,13 @@
           Sign Up
         </v-btn>
       </v-card-actions>
-      <v-snackbar v-model="status" color="success" right>{{ text }}</v-snackbar>
     </v-card>
   </v-layout>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   name: 'Register',
   data() {
@@ -47,7 +48,8 @@ export default {
       lastName: '',
       loading: false,
       text: '',
-      status: false
+      success: false,
+      error: false
     }
   },
   computed: {
@@ -56,14 +58,23 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      registerUser: 'registerUser'
+    }),
     async registration() {
       this.loading = true
-      await new Promise(resolve => setTimeout(resolve, 3000))
-      this.loading = false
-      this.text = 'Registration success'
-      this.status = true
-      await new Promise(resolve => setTimeout(resolve, 4000))
-      this.status = false
+      this.registerUser({
+        username: this.username,
+        password: this.password,
+        firstName: this.firstName,
+        lastName: this.lastName
+      }).then(() => {
+        this.loading = false
+        this.text = 'Registration success'
+      }).catch((e) => {
+        this.loading = false
+        this.text = e
+      })
     },
     validEmail: function (email) {
       let re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
