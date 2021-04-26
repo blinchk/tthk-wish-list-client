@@ -48,7 +48,7 @@
       </v-container>
     </v-main>
     <v-footer
-      :absolute="!fixed"
+      absolute
       app
     >
       <span>&copy; {{ new Date().getFullYear() }}, BredBrains</span>
