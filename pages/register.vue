@@ -8,7 +8,7 @@
             <v-text-field v-model="firstName" :rules="rules.name" label="First Name" prepend-icon="mdi-account"/>
           </v-col>
           <v-col cols="6">
-            <v-text-field v-model="lastName" label="Last Name"/>
+            <v-text-field v-model="lastName" label="Last Name" hint="Optional"/>
           </v-col>
         </v-row>
         <v-text-field v-model="username" :rules="rules.email" label="E-mail" prepend-icon="mdi-at" type="email"/>
