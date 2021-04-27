@@ -31,7 +31,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer/>
-      <v-btn exact to="/register" elevation="0"><v-icon left>mdi-account-plus</v-icon> Sign Up</v-btn>
+      <v-btn exact to="/register" elevation="0" icon><v-icon>mdi-account-plus</v-icon></v-btn>
     </v-app-bar>
     <v-main>
       <v-container fill-height>
