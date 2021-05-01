@@ -1,11 +1,11 @@
 const state = () => ({
   accessToken: null,
-  authorized: false,
   alertNotification: {
     status: false,
-    color: null,
+    color: 'error',
     text: 'Unhandled error.'
-  }
+  },
+  user: null
 })
 
 const getters = {
@@ -17,8 +17,8 @@ const getters = {
 const actions = {
   registerUser ({ commit }, payload) {
     return new Promise((resolve, reject) => {
-      this.$axios.post('/api/auth/register', {
-        'username': payload.username,
+      this.$axios.post('http://localhost:8080/auth/register', {
+        'email': payload.email,
         'password': payload.password,
         'firstName': payload.firstName,
         'lastName': payload.lastName
@@ -47,16 +47,81 @@ const actions = {
       })
     })
   },
-
+  authUser({ commit } , payload) {
+    return new Promise((resolve, reject) => {
+      this.$axios.post("http://localhost:8080/auth/login", {
+        'email': payload.email,
+        'password': payload.password
+      })
+      .then((response) => {
+        if (response.data.success) {
+          resolve(response.data)
+          commit('setAccessToken', response.data.accessToken)
+        } else if (response.status === 401) {
+          commit('createNewAlert', {
+            color: 'error',
+            text: response.data.error
+          })
+        }
+      }).catch((error) => {
+        commit('createNewAlert', {
+          color: 'error',
+          text: error.response.data.error
+        })
+        reject(error)
+      })
+    })
+  },
+  getUser({ state, commit }) {
+    return new Promise((resolve, reject) => {
+      this.$axios.post("http://localhost:8080/user/", {}, {
+        headers: {
+          'Token': state.accessToken
+        }
+      })
+        .then((response) => {
+          if (response.data.success) {
+            resolve(response.data)
+            commit('setUser', response.data.user)
+          } else if (response.status === 401) {
+            commit('createNewAlert', {
+              color: 'error',
+              text: response.data.error
+            })
+          }
+        }).catch((error) => {
+        commit('createNewAlert', {
+          color: 'error',
+          text: error.response.data.error
+        })
+        reject(error)
+      })
+    })
+  },
+  logoutUser({commit}) {
+    commit('setAccessToken', null);
+  }
 }
 const mutations = {
   createNewAlert(state, payload) {
     state.alertNotification.text = payload.text
     state.alertNotification.color = payload.color
-    state.alertNotification.status = true;
+    state.alertNotification.status = true
   },
   setAlertStatus(state, payload) {
-    state.alertNotification.status = payload;
+    state.alertNotification.status = payload
+  },
+  setAccessToken(state, payload) {
+    state.accessToken = payload
+    localStorage.setItem("token", payload);
+  },
+  deleteUserData(state) {
+    state.user = null
+    state.accessToken = null
+    localStorage.removeItem("token")
+  },
+  setUser(state, payload) {
+    state.user = payload
   }
 }
 
