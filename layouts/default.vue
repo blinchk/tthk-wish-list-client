@@ -31,7 +31,14 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer/>
-      <v-btn exact to="/register" elevation="0" icon><v-icon>mdi-account-plus</v-icon></v-btn>
+      <template v-if="this.accessToken">
+        <span v-if="user">Howdy, {{user.firstName}}</span>
+        <v-btn elevation="0" icon @click.stop="logout()"><v-icon>mdi-logout</v-icon></v-btn>
+      </template>
+      <template v-else>
+        <v-btn exact to="/register" elevation="0" icon><v-icon>mdi-account-plus</v-icon></v-btn>
+        <v-btn exact to="/login" elevation="0" icon><v-icon>mdi-login</v-icon></v-btn>
+      </template>
     </v-app-bar>
     <v-main>
       <v-container fill-height>
@@ -57,7 +64,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   data () {
@@ -73,8 +80,31 @@ export default {
       title: 'Wish List'
     }
   },
+  methods: {
+    ...mapActions(['logoutUser', 'getUser']),
+    logout() {
+      this.logoutUser();
+      this.$router.push('/');
+    },
+    getToken() {
+      if (process.browser) {
+        let token = localStorage.getItem('token')
+        if (token) {
+          this.$store.commit('setAccessToken', token);
+        }
+      }
+    }
+  },
+  mounted() {
+    this.getToken()
+    if (this.accessToken) {
+      this.getUser().then(() => {
+
+      })
+    }
+  },
   computed: {
-    ...mapGetters(['alertNotification']),
+    ...mapState(['accessToken', 'alertNotification', 'user']),
     alertNotificationStatus: {
       get() {
         return this.$store.getters.alertNotification.status

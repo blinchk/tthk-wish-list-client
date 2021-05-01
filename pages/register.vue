@@ -11,7 +11,7 @@
             <v-text-field v-model="lastName" label="Last Name" hint="Optional"/>
           </v-col>
         </v-row>
-        <v-text-field v-model="username" :rules="rules.email" label="E-mail" prepend-icon="mdi-at" type="email"/>
+        <v-text-field v-model="email" :rules="rules.email" label="E-mail" prepend-icon="mdi-at" type="email"/>
         <v-text-field v-model="password" :rules="rules.password" label="Password" prepend-icon="mdi-lock"
                       type="password"/>
       </v-card-text>
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'Register',
@@ -42,35 +42,40 @@ export default {
         password: [val => this.validPass(val) || this.validationText],
         email: [val => this.validEmail(val) || 'Invalid email!']
       },
-      username: '',
+      email: '',
       password: '',
       firstName: '',
       lastName: '',
       loading: false
     }
   },
+  created() {
+    if (this.accessToken && this.authorized) {
+      this.$router.push('/');
+    }
+  },
   computed: {
+    ...mapState(['accessToken', 'authorized']),
     validateFields() {
-      return this.validPass(this.password) && this.validEmail(this.username) && this.validName(this.firstName)
+      return this.validPass(this.password) && this.validEmail(this.email) && this.validName(this.firstName)
     }
   },
   methods: {
     ...mapActions({
       registerUser: 'registerUser'
     }),
-    async registration() {
+    registration() {
       this.loading = true
       this.registerUser({
-        username: this.username,
+        email: this.email,
         password: this.password,
         firstName: this.firstName,
         lastName: this.lastName
       }).then(() => {
         this.loading = false
         this.$router.push('/')
-      }).catch((e) => {
+      }).catch(() => {
         this.loading = false
-        this.text = e
       })
     },
     validEmail: function (email) {
