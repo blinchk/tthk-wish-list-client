@@ -1,6 +1,6 @@
 <template>
   <v-layout align-center justify-center>
-    <v-card elevation="3" min-width="500px">
+    <v-card elevation="3" max-width="500px">
       <v-card-title>Login</v-card-title>
       <v-card-text>
         <v-text-field v-model="email" label="E-mail" prepend-icon="mdi-at" type="email"/>
