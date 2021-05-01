@@ -84,7 +84,7 @@ export default {
     ...mapActions(['logoutUser', 'getUser']),
     logout() {
       this.logoutUser();
-      this.$router.push('/');
+      this.$router.push('/login');
     },
     getToken() {
       if (process.browser) {
@@ -95,12 +95,10 @@ export default {
       }
     }
   },
-  mounted() {
+  beforeMount() {
     this.getToken()
     if (this.accessToken) {
-      this.getUser().then(() => {
-
-      })
+      this.getUser()
     }
   },
   computed: {

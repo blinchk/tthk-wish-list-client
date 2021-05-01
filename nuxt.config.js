@@ -40,8 +40,7 @@ export default {
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios',
-    '@nuxtjs/auth-next'
+    '@nuxtjs/axios'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -72,23 +71,11 @@ export default {
     }
   },
 
-  // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {
+  loading: {
+    color: 'green'
   },
 
-  auth: {
-    strategies: {
-      local: {
-        scheme: 'local',
-        token: {
-          property: 'accessToken',
-          required: true,
-          type: false
-        },
-        endpoints: {
-          login: { url: 'http://localhost:8080/auth/login', method: 'post', propertyName: 'accessToken' },
-        }
-      }
-    }
+  // Build Configuration: https://go.nuxtjs.dev/config-build
+  build: {
   }
 }

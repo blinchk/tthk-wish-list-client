@@ -35,13 +35,13 @@ export default {
   computed: {
     ...mapState(['accessToken']),
   },
-  mounted() {
-    if (this.accessToken) {
-      this.$router.push('/');
+  beforeMount() {
+    if(this.accessToken) {
+      this.$router.push('/')
     }
   },
   methods: {
-    ...mapActions(['authUser']),
+    ...mapActions(['authUser', 'getUser']),
     async auth() {
       let email = this.email
       let password = this.password
@@ -51,6 +51,9 @@ export default {
         password: password
       }).then(() => {
         this.loading = false;
+        if (this.accessToken) {
+          this.getUser()
+        }
         this.$router.push('/')
       }).catch(() => {
         this.loading = false

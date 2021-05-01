@@ -99,7 +99,7 @@ const actions = {
     })
   },
   logoutUser({commit}) {
-    commit('setAccessToken', null);
+    commit('deleteUserData', null);
   }
 }
 const mutations = {

@@ -49,9 +49,9 @@ export default {
       loading: false
     }
   },
-  created() {
-    if (this.accessToken && this.authorized) {
-      this.$router.push('/');
+  beforeMount() {
+    if(this.accessToken) {
+      this.$router.push('/')
     }
   },
   computed: {
