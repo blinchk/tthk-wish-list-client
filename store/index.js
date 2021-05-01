@@ -17,7 +17,7 @@ const getters = {
 const actions = {
   registerUser ({ commit }, payload) {
     return new Promise((resolve, reject) => {
-      this.$axios.post('http://localhost:8080/auth/register', {
+      this.$axios.post('/api/auth/register', {
         'email': payload.email,
         'password': payload.password,
         'firstName': payload.firstName,
@@ -49,7 +49,7 @@ const actions = {
   },
   authUser({ commit } , payload) {
     return new Promise((resolve, reject) => {
-      this.$axios.post("http://localhost:8080/auth/login", {
+      this.$axios.post("/api/auth/login", {
         'email': payload.email,
         'password': payload.password
       })
@@ -74,7 +74,7 @@ const actions = {
   },
   getUser({ state, commit }) {
     return new Promise((resolve, reject) => {
-      this.$axios.post("http://localhost:8080/user/", {}, {
+      this.$axios.post("/api/user/", {}, {
         headers: {
           'Token': state.accessToken
         }
