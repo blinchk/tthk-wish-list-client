@@ -43,15 +43,7 @@
     <v-main>
       <v-container fill-height>
         <nuxt/>
-        <v-snackbar v-model="alertNotificationStatus" :color="alertNotification.color" bottom
-                    right timeout="1000" :multi-line="alertNotification.text > 40"
-        >
-          <v-icon v-if="alertNotification.color === 'error'" left>mdi-alert-circle-outline</v-icon>
-          <v-icon v-else-if="alertNotification.color === 'warning'" left>mdi-alert-outline</v-icon>
-          <v-icon v-else-if="alertNotification.color === 'success'" left>mdi-check-circle-outline</v-icon>
-          <v-icon v-else left>mdi-information-outline</v-icon>
-          {{ alertNotification.text }}
-        </v-snackbar>
+        <AlertNotification/>
       </v-container>
     </v-main>
     <v-footer
@@ -64,7 +56,9 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
+import AlertNotification from '~/components/AlertNotification'
+
 
 export default {
   data () {
@@ -79,6 +73,9 @@ export default {
       ],
       title: 'Wish List'
     }
+  },
+  components: {
+    AlertNotification
   },
   methods: {
     ...mapActions(['logoutUser', 'getUser']),
@@ -102,15 +99,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['accessToken', 'alertNotification', 'user']),
-    alertNotificationStatus: {
-      get() {
-        return this.$store.getters.alertNotification.status
-      },
-      set(payload) {
-        this.$store.commit('setAlertStatus', payload)
-      }
-    }
+    ...mapState(['accessToken', 'user']),
   }
 }
 </script>
