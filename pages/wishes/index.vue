@@ -81,9 +81,8 @@ export default {
       moment
     }
   },
-  beforeMount() {
+  created() {
     this.loading = true
-    console.log('hello')
   },
   mounted() {
     if (this.user) {
