@@ -8,7 +8,7 @@
     >
       <v-list>
         <v-list-item
-          v-for="(item, i) in items"
+          v-for="(item, i) in currentRoutes"
           :key="i"
           :to="item.to"
           router
@@ -71,17 +71,23 @@ export default {
         {
           icon: 'mdi-home',
           title: 'Home',
-          to: '/'
+          to: '/',
+          authorized: false,
+          admin: false
         },
         {
           icon: 'mdi-package',
           title: 'My wishes',
-          to: '/wishes/'
+          to: '/wishes/',
+          authorized: true,
+          admin: false
         },
         {
           icon: 'mdi-plus',
           title: 'Add wish',
-          to: '/wishes/add'
+          to: '/wishes/add',
+          authorized: true,
+          admin: false
         }
       ],
       title: 'Wish List'
@@ -114,7 +120,14 @@ export default {
   },
   computed: {
     ...mapState(['accessToken', 'user']),
-    ...mapGetters(['avatarInitials', 'fullName'])
+    ...mapGetters(['avatarInitials', 'fullName']),
+    currentRoutes() {
+      if (this.accessToken) {
+        return this.items
+      } else {
+        return this.items.filter((item) => item.authorized !== true)
+      }
+    }
   },
 }
 </script>
