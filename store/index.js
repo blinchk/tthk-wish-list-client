@@ -1,3 +1,5 @@
+import wishes from './modules/wishes'
+
 const state = () => ({
   accessToken: null,
   alertNotification: {
@@ -8,9 +10,20 @@ const state = () => ({
   user: null
 })
 
+const errors = {
+  USER_REGISTERED_SUCCESSFULLY: 'User registered succesfully.',
+  ACCESS_DENIED: 'Sorry, you cannot use this page.'
+}
+
 const getters = {
   alertNotification(state) {
     return state.alertNotification
+  },
+  avatarInitials(state) {
+    return state.user.firstName[0].toUpperCase() + state.user.lastName[0].toUpperCase()
+  },
+  fullName(state) {
+    return state.user.firstName + ' ' + state.user.lastName
   }
 }
 
@@ -27,7 +40,7 @@ const actions = {
         if (response.status === 200) {
           commit('createNewAlert', {
             color: 'success',
-            text: 'User registered successfully'
+            text: errors.USER_REGISTERED_SUCCESSFULLY
           })
           resolve()
         }
@@ -74,7 +87,7 @@ const actions = {
   },
   getUser({ state, commit }) {
     return new Promise((resolve, reject) => {
-      this.$axios.post("/api/user/", {}, {
+      this.$axios.get("/api/user/", {
         headers: {
           'Token': state.accessToken
         }
@@ -100,6 +113,23 @@ const actions = {
   },
   logoutUser({commit}) {
     commit('deleteUserData', null);
+  },
+  userFullname(payload) {
+    return payload.firstName + ' ' + payload.lastName
+  },
+  throwAccessDenied({commit}) {
+    commit('createNewAlert', {
+      'text': errors.ACCESS_DENIED,
+      'color': 'error'
+    })
+    this.$router.push('/')
+  },
+  checkForToken({state, dispatch}) {
+    if (!state.accessToken) {
+      dispatch('throwAccessDenied')
+      return false
+    }
+    return true
   }
 }
 const mutations = {
@@ -125,10 +155,15 @@ const mutations = {
   }
 }
 
+const modules = {
+  wishes
+}
+
 export default {
   namespaced: true,
   state,
   getters,
   actions,
-  mutations
+  mutations,
+  modules
 }

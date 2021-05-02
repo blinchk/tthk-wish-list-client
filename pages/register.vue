@@ -51,7 +51,7 @@ export default {
   },
   beforeMount() {
     if(this.accessToken) {
-      this.$router.push('/')
+      this.throwAccessDenied();
     }
   },
   computed: {
@@ -62,7 +62,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      registerUser: 'registerUser'
+      registerUser: 'registerUser',
+      throwAccessDenied: 'throwAccessDenied'
     }),
     registration() {
       this.loading = true

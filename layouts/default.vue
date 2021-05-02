@@ -8,7 +8,7 @@
     >
       <v-list>
         <v-list-item
-          v-for="(item, i) in items"
+          v-for="(item, i) in currentRoutes"
           :key="i"
           :to="item.to"
           router
@@ -33,7 +33,7 @@
       <v-spacer/>
       <template v-if="this.accessToken">
         <div class="user__info d-flex align-center" v-if="user">
-          <v-avatar :color="avatarColor" size="40">{{ avatarInitials }}</v-avatar>
+          <v-avatar :color="avatarColor(fullName)" size="40">{{ avatarInitials }}</v-avatar>
           <span class="ml-2"> Howdy, {{user.firstName}}</span>
         </div>
         <v-btn elevation="0" icon @click.stop="logout()"><v-icon>mdi-logout</v-icon></v-btn>
@@ -50,7 +50,7 @@
       </v-container>
     </v-main>
     <v-footer
-      absolute
+      fixed
       app
     >
       <span>&copy; {{ new Date().getFullYear() }}, BredBrains</span>
@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import AlertNotification from '~/components/AlertNotification'
 import randomMC from 'random-material-color'
 
@@ -71,7 +71,23 @@ export default {
         {
           icon: 'mdi-home',
           title: 'Home',
-          to: '/'
+          to: '/',
+          authorized: false,
+          admin: false
+        },
+        {
+          icon: 'mdi-package',
+          title: 'My wishes',
+          to: '/wishes/',
+          authorized: true,
+          admin: false
+        },
+        {
+          icon: 'mdi-plus',
+          title: 'Add wish',
+          to: '/wishes/add',
+          authorized: true,
+          admin: false
         }
       ],
       title: 'Wish List'
@@ -91,24 +107,27 @@ export default {
         let token = localStorage.getItem('token')
         if (token) {
           this.$store.commit('setAccessToken', token);
+          this.getUser()
         }
       }
+    },
+    avatarColor(fullName) {
+      return randomMC.getColor({ text: fullName })
     }
   },
-  beforeMount() {
+  created() {
     this.getToken()
-    if (this.accessToken) {
-      this.getUser()
-    }
   },
   computed: {
     ...mapState(['accessToken', 'user']),
-    avatarInitials() {
-      return this.user.firstName[0].toUpperCase() + this.user.lastName[0].toUpperCase()
-    },
-    avatarColor() {
-      return randomMC.getColor( { text: this.user.firstName + this.user.lastName } );
+    ...mapGetters(['avatarInitials', 'fullName']),
+    currentRoutes() {
+      if (this.accessToken) {
+        return this.items
+      } else {
+        return this.items.filter((item) => item.authorized !== true)
+      }
     }
-  }
+  },
 }
 </script>
