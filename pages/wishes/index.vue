@@ -19,7 +19,7 @@
               </div>
             </v-card-title>
             <v-divider/>
-            <v-card-text>
+            <v-card-text v-if="wish.description">
               <p>{{ wish.description }}</p>
             </v-card-text>
             <v-card-actions class="px-2">
