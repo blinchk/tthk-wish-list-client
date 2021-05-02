@@ -2,8 +2,8 @@
   <v-layout wrap>
     <template v-if="loading">
       <v-col cols="12">
-        <v-row>
-
+        <v-row class="justify-center">
+          <v-progress-circular indeterminate></v-progress-circular>
         </v-row>
       </v-col>
     </template>
