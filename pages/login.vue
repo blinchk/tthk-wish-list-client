@@ -46,11 +46,11 @@ export default {
   },
   beforeMount() {
     if(this.accessToken) {
-      this.$router.push('/')
+      this.throwAccessDenied();
     }
   },
   methods: {
-    ...mapActions(['authUser', 'getUser']),
+    ...mapActions(['authUser', 'getUser', 'throwAccessDenied']),
     async auth() {
       let email = this.email
       let password = this.password

@@ -40,7 +40,7 @@
             <v-card-actions>
               <v-row class="align-center">
                 <v-col cols="8" class="text-caption">
-                  <span class="ml-2">You can edit or delete this wish, because it is created by <strong>you.</strong></span>
+                  <p class="ml-2">You can edit or delete this wish, because it is created by <strong>you.</strong></p>
                 </v-col>
                 <v-col cols="4" class="text-right">
                   <template v-if="wish.user.id === user.id" class="mr-2">
@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 import randomMC from 'random-material-color'
 import moment from 'moment'
 
@@ -85,7 +85,9 @@ export default {
     this.loading = true
   },
   mounted() {
-    if (this.user) {
+    if (!this.accessToken) {
+      this.loading = this.checkForToken()
+    } else if (this.user) {
       this.getWishes().then(() => {
         this.loading = false
       }).catch(() => {
@@ -100,16 +102,18 @@ export default {
         })
       }).catch(() => {
         this.loading = false
+        this.throwAccessDenied()
       })
     }
   },
   computed: {
     ...mapState('wishes', ['wishes']),
-    ...mapState(['user'])
+    ...mapState(['user', 'accessToken'])
   },
   methods: {
     ...mapActions('wishes', ['getWishes']),
-    ...mapActions(['getUser']),
+    ...mapActions(['getUser', 'checkForToken']),
+    ...mapMutations(['createNewAlert']),
     userFullname(user) {
       return user.firstName + ' ' + user.lastName
     },

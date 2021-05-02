@@ -16,7 +16,6 @@
             Add wish
           </v-btn>
         </v-col>
-
       </v-card-actions>
     </v-card>
   </v-layout>
@@ -37,8 +36,12 @@ export default {
   computed:{
     ...mapState('wishes', ['wishes'])
   },
+  mounted () {
+    this.checkForToken()
+  },
   methods:{
     ...mapActions('wishes', ['addWish']),
+    ...mapActions(['checkForToken']),
     async wishadding() {
       this.addWish({
         name: this.name,

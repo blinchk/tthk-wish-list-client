@@ -10,6 +10,11 @@ const state = () => ({
   user: null
 })
 
+const errors = {
+  USER_REGISTERED_SUCCESSFULLY: 'User registered succesfully.',
+  ACCESS_DENIED: 'Sorry, you cannot use this page.'
+}
+
 const getters = {
   alertNotification(state) {
     return state.alertNotification
@@ -35,7 +40,7 @@ const actions = {
         if (response.status === 200) {
           commit('createNewAlert', {
             color: 'success',
-            text: 'User registered successfully'
+            text: errors.USER_REGISTERED_SUCCESSFULLY
           })
           resolve()
         }
@@ -111,6 +116,20 @@ const actions = {
   },
   userFullname(payload) {
     return payload.firstName + ' ' + payload.lastName
+  },
+  throwAccessDenied({commit}) {
+    commit('createNewAlert', {
+      'text': errors.ACCESS_DENIED,
+      'color': 'error'
+    })
+    this.$router.push('/')
+  },
+  checkForToken({state, dispatch}) {
+    if (!state.accessToken) {
+      dispatch('throwAccessDenied')
+      return false
+    }
+    return true
   }
 }
 const mutations = {
