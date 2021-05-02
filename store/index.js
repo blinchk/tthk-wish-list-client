@@ -26,7 +26,7 @@ const actions = {
         'lastName': payload.lastName
       })
       .then((response) => {
-        if (response.data.success) {
+        if (response.status === 200) {
           commit('createNewAlert', {
             color: 'success',
             text: 'User registered successfully'
@@ -49,7 +49,7 @@ const actions = {
       })
     })
   },
-  authUser({ commit } , payload) {
+  authUser ({ commit } , payload) {
     return new Promise((resolve, reject) => {
       this.$axios.post("/api/auth/login", {
         'email': payload.email,

@@ -32,7 +32,10 @@
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer/>
       <template v-if="this.accessToken">
-        <span v-if="user">Howdy, {{user.firstName}}</span>
+        <div class="user__info d-flex align-center" v-if="user">
+          <v-avatar :color="avatarColor" size="40">{{ avatarInitials }}</v-avatar>
+          <span class="ml-2"> Howdy, {{user.firstName}}</span>
+        </div>
         <v-btn elevation="0" icon @click.stop="logout()"><v-icon>mdi-logout</v-icon></v-btn>
       </template>
       <template v-else>
@@ -58,7 +61,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import AlertNotification from '~/components/AlertNotification'
-
+import randomMC from 'random-material-color'
 
 export default {
   data () {
@@ -105,6 +108,12 @@ export default {
   },
   computed: {
     ...mapState(['accessToken', 'user']),
+    avatarInitials() {
+      return this.user.firstName[0].toUpperCase() + this.user.lastName[0].toUpperCase()
+    },
+    avatarColor() {
+      return randomMC.getColor( { text: this.user.firstName + this.user.lastName } );
+    }
   }
 }
 </script>
