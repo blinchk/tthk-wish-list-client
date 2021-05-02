@@ -13,28 +13,31 @@
               {{ userFullname(user) }}</div></v-card-title>
             <v-divider/>
             <v-card-text>
-              <p>{{ wish.description }}</p>
+              <template v-if="wish.user.id === user.id">
+                <v-row>
+                  <v-col cols="10"><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aspernatur beatae commodi consequatur cumque, ducimus esse est ex fugiat harum, illo illum incidunt itaque laudantium minima quod ratione repellendus sequi tempore velit voluptatem.</p></v-col>
+                  <v-col cols="2">
+                    <v-btn color="error" icon>
+                      <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    <v-btn color="success" icon>
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </template>
+              <template v-else>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda dolorum earum facilis, ipsa molestias nesciunt suscipit voluptates. Architecto aut cum, dolor mollitia odit quis repellendus reprehenderit repudiandae tempore voluptatem! Architecto eligendi exercitationem in.</p>
+              </template>
             </v-card-text>
             <v-card-actions>
               <v-row class="align-center">
-                <v-col cols="4">
-                  <span class="ml-1 text--secondary">{{
+                <v-col cols="6">
+                  <span class="ml-2 text--secondary">{{
                       moment(wish.creationTime).format('HH:mm DD.MM.YYYY')
                     }}</span>
                 </v-col>
-                <v-col cols="4" class="text-center">
-                  <template v-if="wish.user.id === user.id">
-                    <v-btn color="error" text>
-                      <v-icon left>mdi-close</v-icon>
-                      Delete
-                    </v-btn>
-                    <v-btn color="success" text>
-                      <v-icon left>mdi-pencil</v-icon>
-                      Edit
-                    </v-btn>
-                  </template>
-                </v-col>
-                <v-col cols="4" class="text-right">
+                <v-col class="text-right" cols="6">
                   <v-btn icon>
                     <v-icon>mdi-heart</v-icon>
                   </v-btn>
