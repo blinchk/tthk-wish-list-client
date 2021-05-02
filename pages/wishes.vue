@@ -16,7 +16,7 @@
               <p>{{ wish.description }}</p>
             </v-card-text>
             <v-card-actions>
-              <span class="ml-1">{{
+              <span class="ml-1 text-caption">{{
                   moment(wish.creationTime).format('HH:mm DD.MM.YYYY')
                 }}</span>
               <v-spacer/>
