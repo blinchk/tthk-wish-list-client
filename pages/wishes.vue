@@ -15,7 +15,7 @@
             <v-card-text>
               <template v-if="wish.user.id === user.id">
                 <v-row>
-                  <v-col cols="10"><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aspernatur beatae commodi consequatur cumque, ducimus esse est ex fugiat harum, illo illum incidunt itaque laudantium minima quod ratione repellendus sequi tempore velit voluptatem.</p></v-col>
+                  <v-col cols="10"><p>{{ wish.description }}</p></v-col>
                   <v-col cols="2">
                     <v-btn color="error" icon>
                       <v-icon>mdi-close</v-icon>
@@ -27,7 +27,7 @@
                 </v-row>
               </template>
               <template v-else>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda dolorum earum facilis, ipsa molestias nesciunt suscipit voluptates. Architecto aut cum, dolor mollitia odit quis repellendus reprehenderit repudiandae tempore voluptatem! Architecto eligendi exercitationem in.</p>
+                <p>{{ wish.description }}</p>
               </template>
             </v-card-text>
             <v-card-actions>
