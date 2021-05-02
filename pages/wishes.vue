@@ -1,6 +1,13 @@
 <template>
   <v-layout wrap>
-    <template v-if="wishes && user">
+    <template v-if="loading">
+      <v-col cols="12">
+        <v-row>
+
+        </v-row>
+      </v-col>
+    </template>
+    <template v-else-if="wishes && user">
       <v-col cols="12">
         <v-row v-for="wish in wishes" :key="wish.id" class="mb-3 justify-center">
           <v-card width="700px" max-width="700px">
@@ -10,7 +17,6 @@
               <template v-if="wishes">
                 <p>{{ wish.description }}</p>
               </template>
-              <v-progress-circular v-else indeterminate/>
             </v-card-text>
           </v-card>
         </v-row>
@@ -24,8 +30,30 @@ import {mapActions, mapState} from 'vuex'
 
 export default {
   name: "wishes",
+  data() {
+    return {
+      loading: false
+    }
+  },
   mounted() {
-    this.getWishes()
+    this.loading = true
+    if (this.user) {
+      this.getWishes().then(() => {
+        this.loading = false
+      }).catch(() => {
+        this.loading = false
+      })
+    } else {
+      this.getUser().then(() => {
+        this.getWishes().then(() => {
+          this.loading = false
+        }).catch(() => {
+          this.loading = false
+        })
+      }).catch(() => {
+        this.loading = false
+      })
+    }
   },
   computed: {
     ...mapState('wishes', ['wishes']),
@@ -33,6 +61,7 @@ export default {
   },
   methods: {
     ...mapActions('wishes', ['getWishes']),
+    ...mapActions(['getUser']),
     userFullname(user) {
       return user.firstName + ' ' + user.lastName
     },

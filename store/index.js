@@ -82,7 +82,7 @@ const actions = {
   },
   getUser({ state, commit }) {
     return new Promise((resolve, reject) => {
-      this.$axios.post("/api/user/", {}, {
+      this.$axios.get("/api/user/", {
         headers: {
           'Token': state.accessToken
         }
