@@ -52,7 +52,7 @@ const actions = {
             commit('createNewAlert',{
               color: 'success',
               text: 'Wish added'
-            })
+            }, { root: true })
             resolve()
           }
         }).catch((error) => {
@@ -60,12 +60,12 @@ const actions = {
             commit('createNewAlert', {
               color: 'error',
               text: 'This wish already exists'
-            })
+            }, { root: true })
           } else{
             commit('createNewAlert', {
               color: 'error',
               text: error.response.data.error
-            })
+            }, { root: true })
           }
           reject()
       })
