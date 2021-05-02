@@ -22,7 +22,7 @@
             <v-card-text>
               <p>{{ wish.description }}</p>
             </v-card-text>
-            <v-card-actions>
+            <v-card-actions class="px-2">
               <v-row class="align-center">
                 <v-col cols="6">
                   <span class="ml-2 text--secondary">{{
@@ -39,10 +39,10 @@
             <v-divider/>
             <v-card-actions>
               <v-row class="align-center">
-                <v-col cols="6" class="text-caption">
-                  <span class="ml-2">This wish is created by <strong>you.</strong></span>
+                <v-col cols="8" class="text-caption">
+                  <span class="ml-2">You can edit or delete this wish, because it is created by <strong>you.</strong></span>
                 </v-col>
-                <v-col cols="6" class="text-right">
+                <v-col cols="4" class="text-right">
                   <template v-if="wish.user.id === user.id" class="mr-2">
                     <v-btn color="error" icon>
                       <v-icon>mdi-close</v-icon>
