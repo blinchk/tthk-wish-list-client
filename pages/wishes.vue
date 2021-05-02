@@ -1,48 +1,61 @@
 <template>
-  <v-layout wrap>
+  <v-layout wrap :align-center="loading">
     <v-col cols="12">
       <template v-if="loading">
-        <v-col cols="12">
-          <v-row class="justify-center">
-            <v-progress-circular indeterminate></v-progress-circular>
-          </v-row>
-        </v-col>
+        <v-row class="justify-center">
+          <v-progress-circular indeterminate color="primary"/>
+        </v-row>
       </template>
       <template v-else-if="wishes && user">
         <v-row v-for="wish in wishes" :key="wish.id" class="mb-3 justify-center">
           <v-card width="700px" max-width="700px">
-            <v-card-title>{{ wish.name }}</v-card-title>
-            <v-card-subtitle>
-              <v-avatar color="primary" size="28">{{ userInitials(wish.user) }}</v-avatar>
-              {{ userFullname(wish.user) }}
-            </v-card-subtitle>
+            <v-card-title>{{ wish.name }} <v-spacer/><div class="subtitle-1"><v-avatar size="28" :color="avatarColor(userFullname(wish.user))" class="mr-1">{{ userInitials(wish.user) }}</v-avatar>
+              {{ userFullname(user) }}</div></v-card-title>
+            <v-divider/>
             <v-card-text>
-              <template v-if="wishes">
-                <p>{{ wish.description }}</p>
-              </template>
+              <p>{{ wish.description }}</p>
             </v-card-text>
+            <v-card-actions>
+              <span class="ml-1">{{
+                  moment(wish.creationTime).format('HH:mm DD.MM.YYYY')
+                }}</span>
+              <v-spacer/>
+              <v-btn icon>
+                <v-icon>mdi-heart</v-icon>
+              </v-btn>
+            </v-card-actions>
           </v-card>
         </v-row>
       </template>
-      <span v-else>
-      There is currently nothing. Maybe u like to add new wish?
-      </span>
+      <template v-else-if="!loading && !wishes">
+        <v-container>
+          <v-row class="justify-center">
+            <span>There is nothing, maybe you like to add new wish?</span>
+          </v-row>
+        </v-container>
+      </template>
     </v-col>
   </v-layout>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import randomMC from 'random-material-color'
+import moment from 'moment'
 
 export default {
   name: "wishes",
   data() {
     return {
-      loading: false
+      loading: false,
+      moment
     }
   },
-  mounted() {
+  beforeMount() {
     this.loading = true
+    console.log('hello')
+  },
+  mounted() {
     if (this.user) {
       this.getWishes().then(() => {
         this.loading = false
@@ -73,6 +86,9 @@ export default {
     },
     userInitials(user) {
       return user.firstName[0] + user.lastName[0]
+    },
+    avatarColor(fullName) {
+      return randomMC.getColor({ text: fullName })
     }
   }
 }

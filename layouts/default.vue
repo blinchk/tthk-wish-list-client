@@ -33,7 +33,7 @@
       <v-spacer/>
       <template v-if="this.accessToken">
         <div class="user__info d-flex align-center" v-if="user">
-          <v-avatar :color="avatarColor" size="40">{{ avatarInitials }}</v-avatar>
+          <v-avatar :color="avatarColor(fullName)" size="40">{{ avatarInitials }}</v-avatar>
           <span class="ml-2"> Howdy, {{user.firstName}}</span>
         </div>
         <v-btn elevation="0" icon @click.stop="logout()"><v-icon>mdi-logout</v-icon></v-btn>
@@ -50,7 +50,7 @@
       </v-container>
     </v-main>
     <v-footer
-      absolute
+      fixed
       app
     >
       <span>&copy; {{ new Date().getFullYear() }}, BredBrains</span>
@@ -99,6 +99,9 @@ export default {
           this.getUser()
         }
       }
+    },
+    avatarColor(fullName) {
+      return randomMC.getColor({ text: fullName })
     }
   },
   created() {
@@ -106,11 +109,7 @@ export default {
   },
   computed: {
     ...mapState(['accessToken', 'user']),
-    ...mapGetters(['avatarInitials', 'fullName']),
-    avatarColor() {
-      let color = randomMC.getColor({text: this.fullName})
-      return color
-    },
+    ...mapGetters(['avatarInitials', 'fullName'])
   },
 }
 </script>

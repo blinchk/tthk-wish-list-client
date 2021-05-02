@@ -108,6 +108,9 @@ const actions = {
   },
   logoutUser({commit}) {
     commit('deleteUserData', null);
+  },
+  userFullname(payload) {
+    return payload.firstName + ' ' + payload.lastName
   }
 }
 const mutations = {
