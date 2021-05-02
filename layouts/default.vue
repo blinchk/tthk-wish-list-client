@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import AlertNotification from '~/components/AlertNotification'
 import randomMC from 'random-material-color'
 
@@ -96,24 +96,21 @@ export default {
         let token = localStorage.getItem('token')
         if (token) {
           this.$store.commit('setAccessToken', token);
+          this.getUser()
         }
       }
     }
   },
-  beforeMount() {
+  created() {
     this.getToken()
-    if (this.accessToken) {
-      this.getUser()
-    }
   },
   computed: {
     ...mapState(['accessToken', 'user']),
-    avatarInitials() {
-      return this.user.firstName[0].toUpperCase() + this.user.lastName[0].toUpperCase()
-    },
+    ...mapGetters(['avatarInitials', 'fullName']),
     avatarColor() {
-      return randomMC.getColor( { text: this.user.firstName + this.user.lastName } );
-    }
-  }
+      let color = randomMC.getColor({text: this.fullName})
+      return color
+    },
+  },
 }
 </script>

@@ -5,12 +5,12 @@ const state = () => ({
 const getters = {}
 
 const actions = {
-  getWishes({commit}) {
+  getWishes({commit, rootState}) {
     return new Promise((resolve, reject) => {
-      this.$axios.get('/api/wishes/recieve/3',
+      this.$axios.get('/api/user/' + rootState.user.id + '/wishes',
         {
           headers: {
-            'Token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJ1c2VyX25hbWUiOiJiY2hpazNAZ21haWwuY29tIn0.lezSJ5isKoc7NzcfDQ2hwVSJAV-76BoqWRPXegU2Iac'
+            'Token': rootState.accessToken
           }
       }).then((response) => {
         if (response.status === 200) {
@@ -18,6 +18,17 @@ const actions = {
           resolve()
         }
       }).catch((error) => {
+        if (error.response.data.error) {
+          commit('createNewAlert', {
+            'text': error.response.data.error,
+            'color': 'error'
+          }, { root: true })
+        } else {
+          commit('createNewAlert', {
+            'text': error,
+            'color': 'error'
+          }, { root: true })
+        }
         reject(error)
       })
     })

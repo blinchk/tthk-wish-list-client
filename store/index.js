@@ -13,6 +13,12 @@ const state = () => ({
 const getters = {
   alertNotification(state) {
     return state.alertNotification
+  },
+  avatarInitials(state) {
+    return state.user.firstName[0].toUpperCase() + state.user.lastName[0].toUpperCase()
+  },
+  fullName(state) {
+    return state.user.firstName + ' ' + state.user.lastName
   }
 }
 
