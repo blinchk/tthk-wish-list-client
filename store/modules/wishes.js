@@ -32,6 +32,44 @@ const actions = {
         reject(error)
       })
     })
+  },
+  addWish({commit, rootState}, payload){
+    return new Promise((resolve, reject) =>{
+      this.$axios.post('api/wish/add',{
+        'name': payload.name,
+        'description': payload.description,
+        'user': {
+          'id': rootState.user.id
+        }
+      },
+        {
+          headers: {
+            'Token': rootState.accessToken
+          }
+        })
+        .then((response) =>{
+          if (response.status === 200){
+            commit('createNewAlert',{
+              color: 'success',
+              text: 'Wish added'
+            })
+            resolve()
+          }
+        }).catch((error) => {
+          if (error.response.status === 409){
+            commit('createNewAlert', {
+              color: 'error',
+              text: 'This wish already exists'
+            })
+          } else{
+            commit('createNewAlert', {
+              color: 'error',
+              text: error.response.data.error
+            })
+          }
+          reject()
+      })
+    })
   }
 }
 

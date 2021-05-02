@@ -77,6 +77,11 @@ export default {
           icon: 'mdi-package',
           title: 'My wishes',
           to: '/wishes'
+        },
+        {
+          icon: 'mdi-plus',
+          title: 'Add wish',
+          to: '/add-wish'
         }
       ],
       title: 'Wish List'
