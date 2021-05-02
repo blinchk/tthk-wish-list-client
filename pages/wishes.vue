@@ -16,13 +16,30 @@
               <p>{{ wish.description }}</p>
             </v-card-text>
             <v-card-actions>
-              <span class="ml-1 text-caption">{{
-                  moment(wish.creationTime).format('HH:mm DD.MM.YYYY')
-                }}</span>
-              <v-spacer/>
-              <v-btn icon>
-                <v-icon>mdi-heart</v-icon>
-              </v-btn>
+              <v-row class="align-center">
+                <v-col cols="4">
+                  <span class="ml-1 text--secondary">{{
+                      moment(wish.creationTime).format('HH:mm DD.MM.YYYY')
+                    }}</span>
+                </v-col>
+                <v-col cols="4" class="text-center">
+                  <template v-if="wish.user.id === user.id">
+                    <v-btn color="error" text>
+                      <v-icon left>mdi-close</v-icon>
+                      Delete
+                    </v-btn>
+                    <v-btn color="success" text>
+                      <v-icon left>mdi-pencil</v-icon>
+                      Edit
+                    </v-btn>
+                  </template>
+                </v-col>
+                <v-col cols="4" class="text-right">
+                  <v-btn icon>
+                    <v-icon>mdi-heart</v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
             </v-card-actions>
           </v-card>
         </v-row>
