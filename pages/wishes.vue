@@ -1,7 +1,7 @@
-<template>
-  <v-layout align-start justify-center wrap>
-    <v-col cols="6">
-      <v-row v-for="wish in wishes" :key="wish.id" class="mb-3">
+z<template>
+  <v-layout wrap>
+    <v-col cols="12">
+      <v-row v-for="wish in wishes" :key="wish.id" class="mb-3 justify-center">
         <v-card width="700px" max-width="700px">
           <v-card-title>{{ wish.name }}</v-card-title>
           <v-card-text>
