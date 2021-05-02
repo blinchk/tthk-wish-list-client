@@ -1,18 +1,21 @@
 <template>
   <v-layout wrap>
-    <template v-if="loading">
-      <v-col cols="12">
-        <v-row class="justify-center">
-          <v-progress-circular indeterminate></v-progress-circular>
-        </v-row>
-      </v-col>
-    </template>
-    <template v-else-if="wishes && user">
-      <v-col cols="12">
+    <v-col cols="12">
+      <template v-if="loading">
+        <v-col cols="12">
+          <v-row class="justify-center">
+            <v-progress-circular indeterminate></v-progress-circular>
+          </v-row>
+        </v-col>
+      </template>
+      <template v-else-if="wishes && user">
         <v-row v-for="wish in wishes" :key="wish.id" class="mb-3 justify-center">
           <v-card width="700px" max-width="700px">
             <v-card-title>{{ wish.name }}</v-card-title>
-            <v-card-subtitle><v-avatar color="primary" size="28">{{userInitials(wish.user)}}</v-avatar> {{userFullname(wish.user)}}</v-card-subtitle>
+            <v-card-subtitle>
+              <v-avatar color="primary" size="28">{{ userInitials(wish.user) }}</v-avatar>
+              {{ userFullname(wish.user) }}
+            </v-card-subtitle>
             <v-card-text>
               <template v-if="wishes">
                 <p>{{ wish.description }}</p>
@@ -20,13 +23,16 @@
             </v-card-text>
           </v-card>
         </v-row>
-      </v-col>
-    </template>
+      </template>
+      <span v-else>
+      There is currently nothing. Maybe u like to add new wish?
+      </span>
+    </v-col>
   </v-layout>
 </template>
 
 <script>
-import {mapActions, mapState} from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: "wishes",
