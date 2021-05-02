@@ -1,3 +1,5 @@
+import wishes from './modules/wishes'
+
 const state = () => ({
   accessToken: null,
   alertNotification: {
@@ -125,10 +127,15 @@ const mutations = {
   }
 }
 
+const modules = {
+  wishes
+}
+
 export default {
   namespaced: true,
   state,
   getters,
   actions,
-  mutations
+  mutations,
+  modules
 }

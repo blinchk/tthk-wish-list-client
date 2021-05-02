@@ -69,6 +69,11 @@ export default {
           icon: 'mdi-home',
           title: 'Home',
           to: '/'
+        },
+        {
+          icon: 'mdi-package',
+          title: 'My wishes',
+          to: '/wishes'
         }
       ],
       title: 'Wish List'
