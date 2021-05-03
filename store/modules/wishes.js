@@ -61,13 +61,13 @@ const actions = {
               color: 'error',
               text: 'This wish already exists'
             }, { root: true })
-          } else{
+          } else {
             commit('createNewAlert', {
               color: 'error',
               text: error.response.data.error
             }, { root: true })
           }
-          reject()
+        reject()
       })
     })
   }
