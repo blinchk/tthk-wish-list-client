@@ -34,8 +34,7 @@ export default {
         name: [val => val.length > 0 || 'This field is required!'],
       },
       name: '',
-      loading: false,
-      fieldsValid: false,
+      loading: false
     }
   },
   computed: {
