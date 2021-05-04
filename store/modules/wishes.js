@@ -88,16 +88,16 @@ const actions = {
             resolve()
           }
         }).catch((error) => {
-        if (error.response.status === 400) {
+        if (error.response.status === 401) {
           commit('createNewAlert', {
             color: 'error',
-            text: ''
+            text: 'Not authorized'
           }, {root: true})
-        } else if (error.response.status === 500) {
+        } else {
           commit('createNewAlert', {
             color: 'error',
-            text: ''
-          }, {root: true})
+            text: error.response.data.error
+          })
         }
         reject()
       })

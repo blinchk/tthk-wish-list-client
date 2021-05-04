@@ -44,7 +44,7 @@
                 </v-col>
                 <v-col cols="4" class="text-right">
                   <template v-if="wish.user.id === user.id" class="mr-2">
-                    <v-btn color="error" :loading="loading" icon @click.stop="wishDelete(wish)" >
+                    <v-btn :loading="deleteIsLoading" color="error" icon @click.stop="deleteWish(wish)">
                       <v-icon>mdi-close</v-icon>
                     </v-btn>
                     <v-btn color="success" icon>
@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex'
+import {mapActions, mapMutations, mapState} from 'vuex'
 import randomMC from 'random-material-color'
 import moment from 'moment'
 
@@ -78,6 +78,7 @@ export default {
   data() {
     return {
       loading: false,
+      deleteIsLoading: false,
       moment
     }
   },
@@ -111,7 +112,7 @@ export default {
     ...mapState(['user', 'accessToken'])
   },
   methods: {
-    ...mapActions('wishes', ['getWishes', 'deleteWish']),
+    ...mapActions('wishes', ['getWishes']),
     ...mapActions(['getUser', 'checkForToken']),
     ...mapMutations(['createNewAlert']),
     userFullname(user) {
@@ -121,16 +122,23 @@ export default {
       return user.firstName[0] + user.lastName[0]
     },
     avatarColor(fullName) {
-      return randomMC.getColor({ text: fullName })
+      return randomMC.getColor({text: fullName})
     },
-    wishDelete(wish){
-      this.deleteWish({
-        wish: wish
-      }).then(() =>{
-        this.getWishes()
-        }).catch(()=>{
-          this.throwAccessDenied()
-      })
+    deleteWish(wish) {
+      this.deleteIsLoading = true
+      if (this.accessToken) {
+        this.$store.dispatch('wishes/deleteWish', {
+          wish: wish
+        }).then(() => {
+          this.deleteIsLoading = false
+          this.getWishes()
+        }).catch(() => {
+          this.deleteIsLoading = false
+        })
+      } else {
+        this.deleteIsLoading = false
+        this.throwAccessDenied()
+      }
     }
   }
 }
