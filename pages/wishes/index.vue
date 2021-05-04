@@ -44,7 +44,7 @@
                 </v-col>
                 <v-col cols="4" class="text-right">
                   <template v-if="wish.user.id === user.id" class="mr-2">
-                    <v-btn color="error" icon>
+                    <v-btn color="error" :loading="loading" icon @click.stop="wishDelete(wish)" >
                       <v-icon>mdi-close</v-icon>
                     </v-btn>
                     <v-btn color="success" icon>
@@ -111,7 +111,7 @@ export default {
     ...mapState(['user', 'accessToken'])
   },
   methods: {
-    ...mapActions('wishes', ['getWishes']),
+    ...mapActions('wishes', ['getWishes', 'deleteWish']),
     ...mapActions(['getUser', 'checkForToken']),
     ...mapMutations(['createNewAlert']),
     userFullname(user) {
@@ -122,6 +122,15 @@ export default {
     },
     avatarColor(fullName) {
       return randomMC.getColor({ text: fullName })
+    },
+    wishDelete(wish){
+      this.deleteWish({
+        wish: wish
+      }).then(() =>{
+        this.getWishes()
+        }).catch(()=>{
+          this.throwAccessDenied()
+      })
     }
   }
 }
