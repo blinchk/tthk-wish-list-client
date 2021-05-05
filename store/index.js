@@ -1,4 +1,5 @@
 import wishes from './modules/wishes'
+import profile from './modules/profile'
 
 const state = () => ({
   accessToken: null,
@@ -11,7 +12,7 @@ const state = () => ({
 })
 
 const errors = {
-  USER_REGISTERED_SUCCESSFULLY: 'User registered succesfully.',
+  USER_REGISTERED_SUCCESSFULLY: 'User registered successfully.',
   ACCESS_DENIED: 'Sorry, you cannot use this page.'
 }
 
@@ -156,7 +157,8 @@ const mutations = {
 }
 
 const modules = {
-  wishes
+  wishes,
+  profile
 }
 
 export default {
