@@ -32,7 +32,7 @@
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer/>
       <template v-if="this.accessToken">
-        <nuxt-link v-if="user" id="profile-link" depressed exact rounded text to="/profile/edit">
+        <nuxt-link v-if="user" id="profile-link" exact to="/profile/edit">
           <v-avatar :color="avatarColor(fullName)" size="40">{{ avatarInitials }}</v-avatar>
           <span class="ml-1"> Howdy, {{ user.firstName }}</span>
         </nuxt-link>

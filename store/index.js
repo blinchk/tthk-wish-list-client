@@ -12,7 +12,7 @@ const state = () => ({
 })
 
 const errors = {
-  USER_REGISTERED_SUCCESSFULLY: 'User registered succesfully.',
+  USER_REGISTERED_SUCCESSFULLY: 'User registered successfully.',
   ACCESS_DENIED: 'Sorry, you cannot use this page.'
 }
 

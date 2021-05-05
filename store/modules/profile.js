@@ -43,7 +43,7 @@ const actions = {
             'Token': rootState.accessToken
           }
         }).then((response) => {
-        if (response.status === 200) {
+        if (response.data.success) {
           commit('createNewAlert', {
             color: 'success',
             text: 'Profile updated'
