@@ -32,11 +32,13 @@
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer/>
       <template v-if="this.accessToken">
-        <div class="user__info d-flex align-center" v-if="user">
+        <nuxt-link v-if="user" id="profile-link" depressed exact rounded text to="/profile/edit">
           <v-avatar :color="avatarColor(fullName)" size="40">{{ avatarInitials }}</v-avatar>
-          <span class="ml-2"> Howdy, {{user.firstName}}</span>
-        </div>
-        <v-btn elevation="0" icon @click.stop="logout()"><v-icon>mdi-logout</v-icon></v-btn>
+          <span class="ml-1"> Howdy, {{ user.firstName }}</span>
+        </nuxt-link>
+        <v-btn elevation="0" icon @click.stop="logout()">
+          <v-icon>mdi-logout</v-icon>
+        </v-btn>
       </template>
       <template v-else>
         <v-btn exact to="/register" elevation="0" icon><v-icon>mdi-account-plus</v-icon></v-btn>
@@ -59,7 +61,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import {mapActions, mapGetters, mapState} from 'vuex'
 import AlertNotification from '~/components/AlertNotification'
 import randomMC from 'random-material-color'
 
@@ -131,3 +133,11 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+#profile-link {
+  color: white;
+  text-decoration: none;
+}
+
+</style>
