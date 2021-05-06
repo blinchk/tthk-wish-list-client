@@ -44,7 +44,7 @@
                 </v-col>
                 <v-col cols="4" class="text-right">
                   <template v-if="wish.user.id === user.id" class="mr-2">
-                    <v-btn :loading="deleteIsLoading" color="error" icon @click.stop="deleteWish(wish)">
+                    <v-btn color="error" icon @click.stop="openDeletionConfirmation(wish)" :loading="deleteIsLoading[wish.id]">
                       <v-icon>mdi-close</v-icon>
                     </v-btn>
                     <v-btn color="success" icon>
@@ -56,6 +56,19 @@
             </v-card-actions>
           </v-card>
         </v-row>
+        <v-dialog v-model="deleteConfirmation" max-width="500px">
+          <v-card>
+            <v-card-title>Are you about to delete this wish?</v-card-title>
+            <v-card-text>
+              This action cannot be canceled and will delete wish <br> <strong v-if="selectedWish">{{selectedWish.name}}</strong>,
+              that created <span v-if="selectedWish">{{ moment(selectedWish.creationTime).format('DD.MM.YYYY HH:mm') }}</span>.
+            </v-card-text>
+            <v-card-actions class="justify-end">
+              <v-btn @click="deleteConfirmation = false" text>Cancel</v-btn>
+              <v-btn depressed color="error" @click.stop="deleteWish(selectedWish)"><v-icon left>mdi-delete</v-icon>Delete</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </template>
       <template v-else-if="!loading && !wishes">
         <v-container>
@@ -78,7 +91,9 @@ export default {
   data() {
     return {
       loading: false,
-      deleteIsLoading: false,
+      deleteConfirmation: false,
+      deleteIsLoading: {},
+      selectedWish: null,
       moment
     }
   },
@@ -124,19 +139,24 @@ export default {
     avatarColor(fullName) {
       return randomMC.getColor({text: fullName})
     },
+    openDeletionConfirmation(wish) {
+      this.deleteConfirmation = true
+      this.selectedWish = wish
+    },
     deleteWish(wish) {
-      this.deleteIsLoading = true
+      this.deleteConfirmation = false
+      this.deleteIsLoading[wish.id] = true
       if (this.accessToken) {
         this.$store.dispatch('wishes/deleteWish', {
           wish: wish
         }).then(() => {
-          this.deleteIsLoading = false
+          this.deleteIsLoading[wish.id] = false
           this.getWishes()
         }).catch(() => {
-          this.deleteIsLoading = false
+          this.deleteIsLoading[wish.id] = false
         })
       } else {
-        this.deleteIsLoading = false
+        this.deleteIsLoading[wish.id] = false
         this.throwAccessDenied()
       }
     }
