@@ -1,24 +1,25 @@
 <template>
   <v-layout align-center justify-center>
     <v-card elevation="3" width="500px" max-width="500px">
-      <v-card-title>Add new wish</v-card-title>
-      <v-card-text>
-        <v-text-field v-model="name" label="Name" :rules="rules.name"></v-text-field>
-        <v-text-field label="Description" hint="Optional"></v-text-field>
-      </v-card-text>
-      <v-card-actions class="text-right">
-        <v-col class="text-right">
-          <v-btn :disabled="!validName" :loading="loading" color="success" class="text-right" text
-                 @click.stop="wishadding"
-          >
-            <v-spacer/>
-            <v-icon left>
-              mdi-plus
-            </v-icon>
-            Add wish
-          </v-btn>
-        </v-col>
-      </v-card-actions>
+      <v-form @submit.prevent="wishAdding">
+        <v-card-title>Add new wish</v-card-title>
+        <v-card-text>
+          <v-text-field v-model="name" label="Name" :rules="rules.name" type="text"></v-text-field>
+          <v-text-field v-model="description" label="Description" hint="Optional" type="text"></v-text-field>
+        </v-card-text>
+        <v-card-actions class="text-right">
+          <v-col class="text-right">
+            <v-btn :disabled="!validName" :loading="loading" color="success" class="text-right" text type="submit"
+            >
+              <v-spacer/>
+              <v-icon left>
+                mdi-plus
+              </v-icon>
+              Add wish
+            </v-btn>
+          </v-col>
+        </v-card-actions>
+      </v-form>
     </v-card>
   </v-layout>
 </template>
@@ -34,6 +35,7 @@ export default {
         name: [val => val.length > 0 || 'This field is required!'],
       },
       name: '',
+      description: '',
       loading: false
     }
   },
@@ -49,7 +51,7 @@ export default {
   methods: {
     ...mapActions('wishes', ['addWish']),
     ...mapActions(['checkForToken']),
-    async wishadding() {
+    async wishAdding() {
       this.addWish({
         name: this.name,
         description: this.description

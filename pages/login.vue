@@ -56,7 +56,7 @@ export default {
       let password = this.password
       this.loading = true
       this.authUser({
-        email: email,
+        email: email.toLowerCase(),
         password: password
       }).then(() => {
         this.loading = false;
