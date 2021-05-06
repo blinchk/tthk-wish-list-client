@@ -58,7 +58,7 @@
         </v-row>
         <v-dialog v-model="deleteConfirmation" max-width="500px">
           <v-card>
-            <v-card-title>Are you about to delete this wish?</v-card-title>
+            <v-card-title>Are you sure about wish deleting?</v-card-title>
             <v-card-text>
               This action cannot be canceled and will delete wish <br> <strong v-if="selectedWish">{{selectedWish.name}}</strong>,
               that created <span v-if="selectedWish">{{ moment(selectedWish.creationTime).format('DD.MM.YYYY HH:mm') }}</span>.
