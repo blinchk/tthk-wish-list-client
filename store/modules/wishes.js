@@ -35,21 +35,18 @@ const actions = {
   },
   addWish({commit, rootState}, payload){
     return new Promise((resolve, reject) =>{
-      this.$axios.post('api/wish/add',{
-        'name': payload.name,
-        'description': payload.description,
-        'user': {
-          'id': rootState.user.id
-        }
-      },
+      this.$axios.put('api/wish/', {
+          'name': payload.name,
+          'description': payload.description
+        },
         {
           headers: {
             'Token': rootState.accessToken
           }
         })
-        .then((response) =>{
-          if (response.status === 200){
-            commit('createNewAlert',{
+        .then((response) => {
+          if (response.status === 200) {
+            commit('createNewAlert', {
               color: 'success',
               text: 'Wish added'
             }, { root: true })
