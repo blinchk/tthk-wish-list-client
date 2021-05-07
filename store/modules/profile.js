@@ -34,7 +34,7 @@ const actions = {
   },
   editProfile({commit, rootState, dispatch}, payload) {
     return new Promise((resolve, reject) => {
-      this.$axios.post('/api/user/', {
+      this.$axios.patch('/api/user/', {
           'firstName': payload.firstName,
           'lastName': payload.lastName,
         },

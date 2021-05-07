@@ -36,17 +36,11 @@ const actions = {
       })
     })
   },
-  addWish ({
-    commit,
-    rootState
-  }, payload) {
-    return new Promise((resolve, reject) => {
-      this.$axios.post('api/wish/add', {
+  addWish({commit, rootState}, payload){
+    return new Promise((resolve, reject) =>{
+      this.$axios.put('api/wish/', {
           'name': payload.name,
-          'description': payload.description,
-          'user': {
-            'id': rootState.user.id
-          }
+          'description': payload.description
         },
         {
           headers: {
