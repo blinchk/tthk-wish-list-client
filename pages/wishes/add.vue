@@ -1,15 +1,15 @@
 <template>
   <v-layout align-center justify-center>
-    <v-card elevation="3" width="500px" max-width="500px">
+    <v-card elevation="3" max-width="500px" width="500px">
       <v-form @submit.prevent="wishAdding">
         <v-card-title>Add new wish</v-card-title>
         <v-card-text>
-          <v-text-field v-model="name" label="Name" :rules="rules.name" type="text"></v-text-field>
-          <v-text-field v-model="description" label="Description" hint="Optional" type="text"></v-text-field>
+          <v-text-field v-model="name" :rules="rules.name" label="Name" type="text"></v-text-field>
+          <v-text-field v-model="description" hint="Optional" label="Description" type="text"></v-text-field>
         </v-card-text>
         <v-card-actions class="text-right">
           <v-col class="text-right">
-            <v-btn :disabled="!validName" :loading="loading" color="success" class="text-right" text type="submit"
+            <v-btn :disabled="!validName" :loading="loading" class="text-right" color="success" text type="submit"
             >
               <v-spacer/>
               <v-icon left>
@@ -25,11 +25,11 @@
 </template>
 
 <script>
-import {mapActions, mapState} from "vuex";
+import { mapActions, mapState } from 'vuex'
 
 export default {
-  name: "add-wish",
-  data() {
+  name: 'add-wish',
+  data () {
     return {
       rules: {
         name: [val => val.length > 0 || 'This field is required!'],
@@ -45,13 +45,13 @@ export default {
       return this.name.length > 0
     }
   },
-  mounted() {
+  mounted () {
     this.checkForToken()
   },
   methods: {
     ...mapActions('wishes', ['addWish']),
     ...mapActions(['checkForToken']),
-    async wishAdding() {
+    async wishAdding () {
       this.addWish({
         name: this.name,
         description: this.description
