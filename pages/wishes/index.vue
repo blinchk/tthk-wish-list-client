@@ -8,7 +8,42 @@
       </template>
       <template v-else-if="wishes && user">
         <v-row v-for="wish in wishes" :key="wish.id" class="mb-3 justify-center">
-          <v-card width="700px" max-width="700px" elevation="3">
+          <v-card width="700px" max-width="700px" elevation="3" v-if="wishInEdit && wishInEdit.id === wish.id">
+            <v-form @submit.prevent="editWish(wishInEdit)">
+              <v-card-title><v-row><v-text-field class="ml-2 mt-3" prepend-icon="mdi-pencil" label="Name" v-model="wishInEdit.name" dense single-line :rules="rules.name"/></v-row>
+                <v-spacer/>
+                <div class="subtitle-1">
+                  <v-avatar :color="avatarColor(userFullname(wish.user))" class="mr-1" size="28">
+                    {{ userInitials(wish.user) }}
+                  </v-avatar>
+                  {{ userFullname(user) }}
+                </div>
+              </v-card-title>
+              <v-divider/>
+              <v-card-text class="my py-0">
+                <v-textarea v-model="wishInEdit.description" dense label="Description" single-line rows="2"/>
+              </v-card-text>
+              <v-card-actions class="px-2 pt-0  ">
+                <v-row class="align-center">
+                  <v-col cols="6">
+                    <span class="ml-2 text--secondary">{{
+                        moment(wish.creationTime).format('HH:mm DD.MM.YYYY')
+                      }}</span>
+                  </v-col>
+                </v-row>
+              </v-card-actions>
+              <v-divider/>
+              <v-card-actions>
+                <v-row class="align-center">
+                  <v-col class="text-right">
+                    <v-btn text @click.stop="wishInEdit = {}">Cancel</v-btn>
+                    <v-btn color="success" :loading="editIsLoading[wish.id]" :disabled="!validName" depressed text type="submit"><v-icon left>mdi-pencil</v-icon>Edit</v-btn>
+                  </v-col>
+                </v-row>
+              </v-card-actions>
+            </v-form>
+          </v-card>
+          <v-card width="700px" max-width="700px" elevation="3" v-else>
             <v-card-title>{{ wish.name }}
               <v-spacer/>
               <div class="subtitle-1">
@@ -47,7 +82,7 @@
                     <v-btn color="error" icon @click.stop="openDeletionConfirmation(wish)" :loading="deleteIsLoading[wish.id]">
                       <v-icon>mdi-close</v-icon>
                     </v-btn>
-                    <v-btn color="success" icon>
+                    <v-btn color="success" icon @click.stop="openWishEditing(wish)">
                       <v-icon>mdi-pencil</v-icon>
                     </v-btn>
                   </template>
@@ -93,7 +128,12 @@ export default {
       loading: false,
       deleteConfirmation: false,
       deleteIsLoading: {},
+      editIsLoading: {},
       selectedWish: null,
+      wishInEdit: {},
+      rules: {
+        name: [val => val.length > 0 || 'This field is required!'],
+      },   
       moment
     }
   },
@@ -124,7 +164,10 @@ export default {
   },
   computed: {
     ...mapState('wishes', ['wishes']),
-    ...mapState(['user', 'accessToken'])
+    ...mapState(['user', 'accessToken']),
+    validName: function () {
+      return this.wishInEdit.name.length > 0
+    }
   },
   methods: {
     ...mapActions('wishes', ['getWishes']),
@@ -157,6 +200,32 @@ export default {
         })
       } else {
         this.deleteIsLoading[wish.id] = false
+        this.throwAccessDenied()
+      }
+    },
+    openWishEditing(wish) {
+      this.wishInEdit = {
+        'id': wish.id,
+        'name': wish.name,
+        'description': wish.description
+      }
+    },
+    editWish(wish) {
+      this.editIsLoading[wish.id] = true
+      if (this.accessToken) {
+        this.$store.dispatch('wishes/editWish', {
+          wish: wish
+        }).then(() => { 
+          this.getWishes().then(() => {
+              this.wishInEdit = {}
+              this.editIsLoading[wish.id] = false
+            })
+            .catch(() => {
+              this.editIsLoading[wish.id] = false
+            })
+        })
+      } else {
+        this.editIsLoading[wish.id] = false
         this.throwAccessDenied()
       }
     }

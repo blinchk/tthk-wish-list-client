@@ -105,8 +105,9 @@ const actions = {
   },
   editWish({commit, rootState}, payload){
     return new Promise((resolve, reject)=>{
-      this.$axios.post("/api/wish" + payload.wish.id,
+      this.$axios.post("/api/wish/update",
         {
+          'id': payload.wish.id,
           'name': payload.wish.name,
           'description': payload.wish.description
         },
@@ -119,10 +120,23 @@ const actions = {
           if (response.status === 200) {
             commit('createNewAlert', {
               color: 'success',
-              text: 'Wish edit'
+              text: 'Wish edited'
             }, {root: true})
             resolve()
           }
+        }).catch((error) => {
+          if (error.response.status === 401) {
+            commit('createNewAlert', {
+              color: 'error',
+              text: 'Not authorized'
+            }, {root: true})
+          } else {
+            commit('createNewAlert', {
+              color: 'error',
+              text: error.response.data.error
+            }, {root: true})
+          }
+          reject()
         })
     })
   }
