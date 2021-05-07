@@ -117,7 +117,7 @@ const actions = {
     rootState
   }, payload) {
     return new Promise((resolve, reject) => {
-      this.$axios.post('/api/wish/update',
+      this.$axios.patch('/api/wish/',
         {
           'id': payload.wish.id,
           'name': payload.wish.name,
