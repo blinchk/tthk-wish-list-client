@@ -5,14 +5,17 @@ const state = () => ({
 const getters = {}
 
 const actions = {
-  getWishes({commit, rootState}) {
+  getWishes ({
+    commit,
+    rootState
+  }) {
     return new Promise((resolve, reject) => {
       this.$axios.get('/api/user/' + rootState.user.id + '/wishes',
         {
           headers: {
             'Token': rootState.accessToken
           }
-      }).then((response) => {
+        }).then((response) => {
         if (response.status === 200) {
           commit('setWishes', response.data.wishes)
           resolve()
@@ -33,47 +36,53 @@ const actions = {
       })
     })
   },
-  addWish({commit, rootState}, payload){
-    return new Promise((resolve, reject) =>{
-      this.$axios.post('api/wish/add',{
-        'name': payload.name,
-        'description': payload.description,
-        'user': {
-          'id': rootState.user.id
-        }
-      },
+  addWish ({
+    commit,
+    rootState
+  }, payload) {
+    return new Promise((resolve, reject) => {
+      this.$axios.post('api/wish/add', {
+          'name': payload.name,
+          'description': payload.description,
+          'user': {
+            'id': rootState.user.id
+          }
+        },
         {
           headers: {
             'Token': rootState.accessToken
           }
         })
-        .then((response) =>{
-          if (response.status === 200){
-            commit('createNewAlert',{
+        .then((response) => {
+          if (response.status === 200) {
+            commit('createNewAlert', {
               color: 'success',
               text: 'Wish added'
             }, { root: true })
             resolve()
           }
         }).catch((error) => {
-          if (error.response.status === 409){
-            commit('createNewAlert', {
-              color: 'error',
-              text: 'This wish already exists'
-            }, {root: true})
-          } else {
-            commit('createNewAlert', {
-              color: 'error',
-              text: error.response.data.error
-            }, {root: true})
-          }
+        if (error.response.status === 409) {
+          commit('createNewAlert', {
+            color: 'error',
+            text: 'This wish already exists'
+          }, { root: true })
+        } else {
+          commit('createNewAlert', {
+            color: 'error',
+            text: error.response.data.error
+          }, { root: true })
+        }
         reject()
       })
     })
   },
-  deleteWish({commit, rootState}, payload) {
+  deleteWish ({
+    commit,
+    rootState
+  }, payload) {
     return new Promise((resolve, reject) => {
-      this.$axios.delete("/api/wish/" + payload.wish.id,
+      this.$axios.delete('/api/wish/' + payload.wish.id,
         {
           headers: {
             'Token': rootState.accessToken
@@ -84,7 +93,7 @@ const actions = {
             commit('createNewAlert', {
               color: 'success',
               text: 'Wish deleted'
-            }, {root: true})
+            }, { root: true })
             resolve()
           }
         }).catch((error) => {
@@ -92,7 +101,7 @@ const actions = {
           commit('createNewAlert', {
             color: 'error',
             text: 'Not authorized'
-          }, {root: true})
+          }, { root: true })
         } else {
           commit('createNewAlert', {
             color: 'error',
@@ -103,16 +112,19 @@ const actions = {
       })
     })
   },
-  editWish({commit, rootState}, payload){
-    return new Promise((resolve, reject)=>{
-      this.$axios.post("/api/wish/update",
+  editWish ({
+    commit,
+    rootState
+  }, payload) {
+    return new Promise((resolve, reject) => {
+      this.$axios.post('/api/wish/update',
         {
           'id': payload.wish.id,
           'name': payload.wish.name,
           'description': payload.wish.description
         },
         {
-          headers:{
+          headers: {
             'Token': rootState.accessToken
           }
         })
@@ -121,30 +133,30 @@ const actions = {
             commit('createNewAlert', {
               color: 'success',
               text: 'Wish edited'
-            }, {root: true})
+            }, { root: true })
             resolve()
           }
         }).catch((error) => {
-          if (error.response.status === 401) {
-            commit('createNewAlert', {
-              color: 'error',
-              text: 'Not authorized'
-            }, {root: true})
-          } else {
-            commit('createNewAlert', {
-              color: 'error',
-              text: error.response.data.error
-            }, {root: true})
-          }
-          reject()
-        })
+        if (error.response.status === 401) {
+          commit('createNewAlert', {
+            color: 'error',
+            text: 'Not authorized'
+          }, { root: true })
+        } else {
+          commit('createNewAlert', {
+            color: 'error',
+            text: error.response.data.error
+          }, { root: true })
+        }
+        reject()
+      })
     })
   }
 
 }
 
 const mutations = {
-  setWishes(state, payload) {
+  setWishes (state, payload) {
     state.wishes = payload
   }
 }

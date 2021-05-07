@@ -1,16 +1,21 @@
 <template>
-  <v-layout wrap :align-center="loading">
+  <v-layout :align-center="loading" wrap>
     <v-col cols="12">
       <template v-if="loading">
         <v-row class="justify-center">
-          <v-progress-circular indeterminate color="primary"/>
+          <v-progress-circular color="primary" indeterminate/>
         </v-row>
       </template>
       <template v-else-if="wishes && user">
         <v-row v-for="wish in wishes" :key="wish.id" class="mb-3 justify-center">
-          <v-card width="700px" max-width="700px" elevation="3" v-if="wishInEdit && wishInEdit.id === wish.id">
+          <v-card v-if="wishInEdit && wishInEdit.id === wish.id" elevation="3" max-width="700px" width="700px">
             <v-form @submit.prevent="editWish(wishInEdit)">
-              <v-card-title><v-row><v-text-field class="ml-2 mt-3" prepend-icon="mdi-pencil" label="Name" v-model="wishInEdit.name" dense single-line :rules="rules.name"/></v-row>
+              <v-card-title>
+                <v-row>
+                  <v-text-field v-model="wishInEdit.name" :rules="rules.name" class="ml-2 mt-3" dense label="Name"
+                                prepend-icon="mdi-pencil" single-line
+                  />
+                </v-row>
                 <v-spacer/>
                 <div class="subtitle-1">
                   <v-avatar :color="avatarColor(userFullname(wish.user))" class="mr-1" size="28">
@@ -21,7 +26,7 @@
               </v-card-title>
               <v-divider/>
               <v-card-text class="my py-0">
-                <v-textarea v-model="wishInEdit.description" dense label="Description" single-line rows="2"/>
+                <v-textarea v-model="wishInEdit.description" dense label="Description" rows="2" single-line/>
               </v-card-text>
               <v-card-actions class="px-2 pt-0  ">
                 <v-row class="align-center">
@@ -37,13 +42,18 @@
                 <v-row class="align-center">
                   <v-col class="text-right">
                     <v-btn text @click.stop="wishInEdit = {}">Cancel</v-btn>
-                    <v-btn color="success" :loading="editIsLoading[wish.id]" :disabled="!validName" depressed text type="submit"><v-icon left>mdi-pencil</v-icon>Edit</v-btn>
+                    <v-btn :disabled="!validName" :loading="editIsLoading[wish.id]" color="success" depressed text
+                           type="submit"
+                    >
+                      <v-icon left>mdi-pencil</v-icon>
+                      Edit
+                    </v-btn>
                   </v-col>
                 </v-row>
               </v-card-actions>
             </v-form>
           </v-card>
-          <v-card width="700px" max-width="700px" elevation="3" v-else>
+          <v-card v-else elevation="3" max-width="700px" width="700px">
             <v-card-title>{{ wish.name }}
               <v-spacer/>
               <div class="subtitle-1">
@@ -74,12 +84,14 @@
             <v-divider/>
             <v-card-actions>
               <v-row class="align-center">
-                <v-col cols="8" class="text-caption">
+                <v-col class="text-caption" cols="8">
                   <p class="ml-2">You can edit or delete this wish, because it is created by <strong>you.</strong></p>
                 </v-col>
-                <v-col cols="4" class="text-right">
+                <v-col class="text-right" cols="4">
                   <template v-if="wish.user.id === user.id" class="mr-2">
-                    <v-btn color="error" icon @click.stop="openDeletionConfirmation(wish)" :loading="deleteIsLoading[wish.id]">
+                    <v-btn :loading="deleteIsLoading[wish.id]" color="error" icon
+                           @click.stop="openDeletionConfirmation(wish)"
+                    >
                       <v-icon>mdi-close</v-icon>
                     </v-btn>
                     <v-btn color="success" icon @click.stop="openWishEditing(wish)">
@@ -95,12 +107,18 @@
           <v-card>
             <v-card-title>Are you sure about wish deleting?</v-card-title>
             <v-card-text>
-              This action cannot be canceled and will delete wish <br> <strong v-if="selectedWish">{{selectedWish.name}}</strong>,
-              that created <span v-if="selectedWish">{{ moment(selectedWish.creationTime).format('DD.MM.YYYY HH:mm') }}</span>.
+              This action cannot be canceled and will delete wish <br> <strong v-if="selectedWish"
+            >{{ selectedWish.name }}</strong>,
+              that created <span v-if="selectedWish">{{
+                moment(selectedWish.creationTime).format('DD.MM.YYYY HH:mm')
+              }}</span>.
             </v-card-text>
             <v-card-actions class="justify-end">
-              <v-btn @click="deleteConfirmation = false" text>Cancel</v-btn>
-              <v-btn depressed color="error" @click.stop="deleteWish(selectedWish)"><v-icon left>mdi-delete</v-icon>Delete</v-btn>
+              <v-btn text @click="deleteConfirmation = false">Cancel</v-btn>
+              <v-btn color="error" depressed @click.stop="deleteWish(selectedWish)">
+                <v-icon left>mdi-delete</v-icon>
+                Delete
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -117,13 +135,13 @@
 </template>
 
 <script>
-import {mapActions, mapMutations, mapState} from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 import randomMC from 'random-material-color'
 import moment from 'moment'
 
 export default {
-  name: "wishes",
-  data() {
+  name: 'wishes',
+  data () {
     return {
       loading: false,
       deleteConfirmation: false,
@@ -133,14 +151,14 @@ export default {
       wishInEdit: {},
       rules: {
         name: [val => val.length > 0 || 'This field is required!'],
-      },   
+      },
       moment
     }
   },
-  created() {
+  created () {
     this.loading = true
   },
-  mounted() {
+  mounted () {
     if (!this.accessToken) {
       this.loading = this.checkForToken()
     } else if (this.user) {
@@ -173,20 +191,20 @@ export default {
     ...mapActions('wishes', ['getWishes']),
     ...mapActions(['getUser', 'checkForToken']),
     ...mapMutations(['createNewAlert']),
-    userFullname(user) {
+    userFullname (user) {
       return user.firstName + ' ' + user.lastName
     },
-    userInitials(user) {
+    userInitials (user) {
       return user.firstName[0] + user.lastName[0]
     },
-    avatarColor(fullName) {
-      return randomMC.getColor({text: fullName})
+    avatarColor (fullName) {
+      return randomMC.getColor({ text: fullName })
     },
-    openDeletionConfirmation(wish) {
+    openDeletionConfirmation (wish) {
       this.deleteConfirmation = true
       this.selectedWish = wish
     },
-    deleteWish(wish) {
+    deleteWish (wish) {
       this.deleteConfirmation = false
       this.deleteIsLoading[wish.id] = true
       if (this.accessToken) {
@@ -203,23 +221,23 @@ export default {
         this.throwAccessDenied()
       }
     },
-    openWishEditing(wish) {
+    openWishEditing (wish) {
       this.wishInEdit = {
         'id': wish.id,
         'name': wish.name,
         'description': wish.description
       }
     },
-    editWish(wish) {
+    editWish (wish) {
       this.editIsLoading[wish.id] = true
       if (this.accessToken) {
         this.$store.dispatch('wishes/editWish', {
           wish: wish
-        }).then(() => { 
+        }).then(() => {
           this.getWishes().then(() => {
-              this.wishInEdit = {}
-              this.editIsLoading[wish.id] = false
-            })
+            this.wishInEdit = {}
+            this.editIsLoading[wish.id] = false
+          })
             .catch(() => {
               this.editIsLoading[wish.id] = false
             })
