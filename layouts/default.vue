@@ -84,13 +84,6 @@ export default {
           authorized: true,
           admin: false
         },
-        {
-          icon: 'mdi-plus',
-          title: 'Add wish',
-          to: '/wishes/add',
-          authorized: true,
-          admin: false
-        }
       ],
       title: 'Wish List'
     }
