@@ -3,7 +3,7 @@
     <v-col cols="12">
       <v-row class="mb-3 justify-center">
         <v-card elevation="3" max-width="700px" width="700px">
-          <v-form @submit.prevent="wishAdding">
+          <v-form ref="wishAdditionForm" @submit.prevent="wishAdding">
             <v-card-title>Add new wish</v-card-title>
             <v-card-text>
               <v-text-field
@@ -356,6 +356,11 @@ export default {
         this.throwAccessDenied()
       }
     },
+    clearAdditionForm () {
+      this.name = ''
+      this.description = ''
+      this.$refs.wishAdditionForm.resetValidation()
+    },
     async wishAdding () {
       this.additionIsLoading = true
       this.addWish({
@@ -365,6 +370,7 @@ export default {
         .then(() => {
           this.additionIsLoading = false
           this.getWishes()
+          this.clearAdditionForm()
         })
         .catch(() => {
           this.additionIsLoading = false
