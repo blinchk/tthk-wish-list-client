@@ -29,8 +29,8 @@
                   text
                   type="submit"
                 >
-                  <v-spacer />
-                  <v-icon left> mdi-plus </v-icon>
+                  <v-spacer/>
+                  <v-icon left> mdi-plus</v-icon>
                   Add wish
                 </v-btn>
               </v-col>
@@ -40,7 +40,7 @@
       </v-row>
       <template v-if="loading">
         <v-row class="justify-center">
-          <v-progress-circular color="primary" indeterminate />
+          <v-progress-circular color="primary" indeterminate/>
         </v-row>
       </template>
       <template v-else-if="wishes && user">
@@ -68,7 +68,7 @@
                     single-line
                   />
                 </v-row>
-                <v-spacer />
+                <v-spacer/>
                 <div class="subtitle-1">
                   <v-avatar
                     :color="avatarColor(userFullname(wish.user))"
@@ -80,7 +80,7 @@
                   {{ userFullname(user) }}
                 </div>
               </v-card-title>
-              <v-divider />
+              <v-divider/>
               <v-card-text class="my py-0">
                 <v-textarea
                   v-model="wishInEdit.description"
@@ -94,12 +94,12 @@
                 <v-row class="align-center">
                   <v-col cols="6">
                     <span class="ml-2 text--secondary">{{
-                      moment(wish.creationTime).format("HH:mm DD.MM.YYYY")
-                    }}</span>
+                        moment(wish.creationTime).format('HH:mm DD.MM.YYYY')
+                      }}</span>
                   </v-col>
                 </v-row>
               </v-card-actions>
-              <v-divider />
+              <v-divider/>
               <v-card-actions>
                 <v-row class="align-center">
                   <v-col class="text-right">
@@ -122,8 +122,8 @@
           </v-card>
           <v-card v-else elevation="3" max-width="700px" width="700px">
             <v-card-title
-              >{{ wish.name }}
-              <v-spacer />
+            >{{ wish.name }}
+              <v-spacer/>
               <div class="subtitle-1">
                 <v-avatar
                   :color="avatarColor(userFullname(wish.user))"
@@ -135,7 +135,7 @@
                 {{ userFullname(user) }}
               </div>
             </v-card-title>
-            <v-divider />
+            <v-divider/>
             <v-card-text v-if="wish.description">
               <p>{{ wish.description }}</p>
             </v-card-text>
@@ -143,8 +143,8 @@
               <v-row class="align-center">
                 <v-col cols="6">
                   <span class="ml-2 text--secondary">{{
-                    moment(wish.creationTime).format("HH:mm DD.MM.YYYY")
-                  }}</span>
+                      moment(wish.creationTime).format('HH:mm DD.MM.YYYY')
+                    }}</span>
                 </v-col>
                 <v-col class="text-right" cols="6">
                   <v-btn icon>
@@ -153,7 +153,7 @@
                 </v-col>
               </v-row>
             </v-card-actions>
-            <v-divider />
+            <v-divider/>
             <v-card-actions>
               <v-row class="align-center">
                 <v-col class="text-caption" cols="8">
@@ -189,12 +189,12 @@
           <v-card>
             <v-card-title>Are you sure about wish deleting?</v-card-title>
             <v-card-text>
-              This action cannot be canceled and will delete wish <br />
+              This action cannot be canceled and will delete wish <br/>
               <strong v-if="selectedWish">{{ selectedWish.name }}</strong
               >, that created
               <span v-if="selectedWish">{{
-                moment(selectedWish.creationTime).format("DD.MM.YYYY HH:mm")
-              }}</span
+                  moment(selectedWish.creationTime).format('DD.MM.YYYY HH:mm')
+                }}</span
               >.
             </v-card-text>
             <v-card-actions class="justify-end">
@@ -223,152 +223,155 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
-import randomMC from "random-material-color";
-import moment from "moment";
+import { mapActions, mapMutations, mapState } from 'vuex'
+import randomMC from 'random-material-color'
+import moment from 'moment'
 
 export default {
-  name: "wishes",
-  data() {
+  name: 'wishes',
+  data () {
     return {
       loading: false,
       deleteConfirmation: false,
       deleteIsLoading: {},
       editIsLoading: {},
       selectedWish: null,
-      wishInEdit: { name: "", description: "" },
-      rules: {
-        name: [(val) => val.length > 0 || "This field is required!"],
+      wishInEdit: {
+        name: '',
+        description: ''
       },
-      name: "",
-      description: "",
-      moment,
+      rules: {
+        name: [(val) => val.length > 0 || 'This field is required!'],
+      },
+      name: '',
+      description: '',
       additionIsLoading: false,
-    };
+      moment,
+    }
   },
-  created() {
-    this.loading = true;
+  created () {
+    this.loading = true
   },
-  mounted() {
+  mounted () {
     if (!this.accessToken) {
-      this.loading = this.checkForToken();
+      this.loading = this.checkForToken()
     } else if (this.user) {
       this.getWishes()
         .then(() => {
-          this.loading = false;
+          this.loading = false
         })
         .catch(() => {
-          this.loading = false;
-        });
+          this.loading = false
+        })
     } else {
       this.getUser()
         .then(() => {
           this.getWishes()
             .then(() => {
-              this.loading = false;
+              this.loading = false
             })
             .catch(() => {
-              this.loading = false;
-            });
+              this.loading = false
+            })
         })
         .catch(() => {
-          this.loading = false;
-          this.throwAccessDenied();
-        });
+          this.loading = false
+          this.throwAccessDenied()
+        })
     }
   },
   computed: {
-    ...mapState("wishes", ["wishes"]),
-    ...mapState(["user", "accessToken"]),
+    ...mapState('wishes', ['wishes']),
+    ...mapState(['user', 'accessToken']),
     validName: function () {
-      return this.wishInEdit.name.length > 0;
+      return this.wishInEdit.name.length > 0
     },
     validWish: function () {
-      return this.name.length > 0;
+      return this.name.length > 0
     },
   },
   methods: {
-    ...mapActions("wishes", ["getWishes", "addWish"]),
-    ...mapActions(["getUser", "checkForToken"]),
-    ...mapMutations(["createNewAlert"]),
-    userFullname(user) {
-      return user.firstName + " " + user.lastName;
+    ...mapActions('wishes', ['getWishes', 'addWish']),
+    ...mapActions(['getUser', 'checkForToken']),
+    ...mapMutations(['createNewAlert']),
+    userFullname (user) {
+      return user.firstName + ' ' + user.lastName
     },
-    userInitials(user) {
-      return user.firstName[0] + user.lastName[0];
+    userInitials (user) {
+      return user.firstName[0] + user.lastName[0]
     },
-    avatarColor(fullName) {
-      return randomMC.getColor({ text: fullName });
+    avatarColor (fullName) {
+      return randomMC.getColor({ text: fullName })
     },
-    openDeletionConfirmation(wish) {
-      this.deleteConfirmation = true;
-      this.selectedWish = wish;
+    openDeletionConfirmation (wish) {
+      this.deleteConfirmation = true
+      this.selectedWish = wish
     },
-    deleteWish(wish) {
-      this.deleteConfirmation = false;
-      this.deleteIsLoading[wish.id] = true;
+    deleteWish (wish) {
+      this.deleteConfirmation = false
+      this.deleteIsLoading[wish.id] = true
       if (this.accessToken) {
         this.$store
-          .dispatch("wishes/deleteWish", {
+          .dispatch('wishes/deleteWish', {
             wish: wish,
           })
           .then(() => {
-            this.deleteIsLoading[wish.id] = false;
-            this.getWishes();
+            this.deleteIsLoading[wish.id] = false
+            this.getWishes()
           })
           .catch(() => {
-            this.deleteIsLoading[wish.id] = false;
-          });
+            this.deleteIsLoading[wish.id] = false
+          })
       } else {
-        this.deleteIsLoading[wish.id] = false;
-        this.throwAccessDenied();
+        this.deleteIsLoading[wish.id] = false
+        this.throwAccessDenied()
       }
     },
-    openWishEditing(wish) {
+    openWishEditing (wish) {
       this.wishInEdit = {
         id: wish.id,
         name: wish.name,
         description: wish.description,
-      };
+      }
     },
-    editWish(wish) {
-      this.editIsLoading[wish.id] = true;
+    editWish (wish) {
+      this.editIsLoading[wish.id] = true
       if (this.accessToken) {
         this.$store
-          .dispatch("wishes/editWish", {
+          .dispatch('wishes/editWish', {
             wish: wish,
           })
           .then(() => {
             this.getWishes()
               .then(() => {
-                this.wishInEdit = {};
-                this.editIsLoading[wish.id] = false;
+                this.wishInEdit = {}
+                this.editIsLoading[wish.id] = false
               })
               .catch(() => {
-                this.editIsLoading[wish.id] = false;
-              });
-          });
+                this.editIsLoading[wish.id] = false
+              })
+          })
       } else {
-        this.editIsLoading[wish.id] = false;
-        this.throwAccessDenied();
+        this.editIsLoading[wish.id] = false
+        this.throwAccessDenied()
       }
     },
-    async wishAdding() {
-      this.additionIsLoading = true;
+    async wishAdding () {
+      this.additionIsLoading = true
       this.addWish({
         name: this.name,
         description: this.description,
       })
         .then(() => {
-          this.additionIsLoading = false;
-          this.getWishes();
+          this.additionIsLoading = false
+          this.getWishes()
         })
         .catch(() => {
-          this.additionIsLoading = false;
-        });
+          this.additionIsLoading = false
+        })
     },
   },
-};
+}
 </script>
 
 <style scoped>
