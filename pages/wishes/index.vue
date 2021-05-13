@@ -4,7 +4,7 @@
       <v-row class="mb-3 justify-center">
         <v-card elevation="3" max-width="700px" width="700px">
           <v-form ref="wishAdditionForm" @submit.prevent="wishAdding">
-            <v-card-title>Add new wish</v-card-title>
+            <v-card-title>Are you wish about something?</v-card-title>
             <v-card-text>
               <v-text-field
                 v-model="name"
