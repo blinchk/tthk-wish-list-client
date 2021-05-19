@@ -147,7 +147,7 @@
                     }}</span>
                 </v-col>
                 <v-col class="text-right" cols="6">
-                  <v-btn icon>
+                  <v-btn icon @click.stop="toggleLike(wish)" :color="wish.liked ? 'pink' : 'white' ">
                     <v-icon>mdi-heart</v-icon>
                   </v-btn>
                 </v-col>
@@ -291,7 +291,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('wishes', ['getWishes', 'addWish']),
+    ...mapActions('wishes', ['getWishes', 'addWish', 'addLike']),
     ...mapActions(['getUser', 'checkForToken']),
     ...mapMutations(['createNewAlert']),
     userFullname (user) {
@@ -376,7 +376,14 @@ export default {
           this.additionIsLoading = false
         })
     },
-  },
+    async toggleLike(wish){
+      this.addLike({
+        connection: wish.id
+      }).then(()=>{
+        this.getWishes()
+      })
+    }
+  }
 }
 </script>
 
