@@ -376,10 +376,10 @@ export default {
           this.additionIsLoading = false
         })
     },
-    async toggleLike(wish){
-      this.addLike({
+    toggleLike(wish){
+      this.$store.dispatch('wishes/addLike',{
         connection: wish.id
-      }).then(()=>{
+      }).then(()=> {
         this.getWishes()
       })
     }
