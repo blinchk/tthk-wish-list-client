@@ -147,7 +147,7 @@
                     }}</span>
                 </v-col>
                 <v-col class="text-right" cols="6">
-                {{wish.like}}
+                {{wish.likes}}
                   <v-btn icon @click.stop="toggleLike(wish)" :color="wish.liked ? 'pink' : 'white' ">
                     <v-icon>mdi-heart</v-icon>
                   </v-btn>
