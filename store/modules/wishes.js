@@ -1,6 +1,6 @@
 const state = () => ({
   wishes: null,
-  liked: null,
+  likes: null,
 })
 
 const getters = {}
