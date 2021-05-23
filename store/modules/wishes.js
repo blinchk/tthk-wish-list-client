@@ -149,7 +149,7 @@ const actions = {
   addLike({commit, rootState}, payload){
     return new Promise((resolve, reject)=>{
       this.$axios.post('api/wish/like', {
-        'connection': payload.id,
+        'connection': payload.connection,
         'connection_type': 'wishes'
       },
       {
