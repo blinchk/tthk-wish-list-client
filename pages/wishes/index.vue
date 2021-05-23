@@ -147,7 +147,21 @@
                     }}</span>
                 </v-col>
                 <v-col class="text-right" cols="6">
-                  <v-btn icon>
+                  <v-btn v-if="wish.likes" icon @click.stop="showLiked(wish)">
+                    {{ wish.likes }}
+                  </v-btn>
+                  <v-dialog v-model="showPeople" max-width="500px">
+                    <v-card>
+                      <v-card-title>People who liked this wish...</v-card-title>
+                      <v-card-text v-for="like in likes" :key="like.id">
+                        <v-avatar :color="avatarColor(userFullname(like.user))" class="mr-1" size="35">
+                          {{ userInitials(like.user) }}
+                        </v-avatar>
+                        {{ like.user.firstName }} {{ like.user.lastName }}
+                      </v-card-text>
+                    </v-card>
+                  </v-dialog>
+                  <v-btn icon @click.stop="toggleLike(wish)" :color="wish.liked ? 'pink' : 'white' ">
                     <v-icon>mdi-heart</v-icon>
                   </v-btn>
                 </v-col>
@@ -223,17 +237,18 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex'
+import {mapActions, mapMutations, mapState} from 'vuex'
 import randomMC from 'random-material-color'
 import moment from 'moment'
 
 export default {
   name: 'wishes',
-  data () {
+  data() {
     return {
       loading: false,
       deleteConfirmation: false,
       deleteIsLoading: {},
+      showPeople: false,
       editIsLoading: {},
       selectedWish: null,
       wishInEdit: {
@@ -249,10 +264,10 @@ export default {
       moment,
     }
   },
-  created () {
+  created() {
     this.loading = true
   },
-  mounted () {
+  mounted() {
     if (!this.accessToken) {
       this.loading = this.checkForToken()
     } else if (this.user) {
@@ -281,7 +296,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('wishes', ['wishes']),
+    ...mapState('wishes', ['wishes', 'likes']),
     ...mapState(['user', 'accessToken']),
     validName: function () {
       return this.wishInEdit.name.length > 0
@@ -294,20 +309,20 @@ export default {
     ...mapActions('wishes', ['getWishes', 'addWish']),
     ...mapActions(['getUser', 'checkForToken']),
     ...mapMutations(['createNewAlert']),
-    userFullname (user) {
+    userFullname(user) {
       return user.firstName + ' ' + user.lastName
     },
-    userInitials (user) {
+    userInitials(user) {
       return user.firstName[0] + user.lastName[0]
     },
-    avatarColor (fullName) {
-      return randomMC.getColor({ text: fullName })
+    avatarColor(fullName) {
+      return randomMC.getColor({text: fullName})
     },
-    openDeletionConfirmation (wish) {
+    openDeletionConfirmation(wish) {
       this.deleteConfirmation = true
       this.selectedWish = wish
     },
-    deleteWish (wish) {
+    deleteWish(wish) {
       this.deleteConfirmation = false
       this.deleteIsLoading[wish.id] = true
       if (this.accessToken) {
@@ -327,14 +342,14 @@ export default {
         this.throwAccessDenied()
       }
     },
-    openWishEditing (wish) {
+    openWishEditing(wish) {
       this.wishInEdit = {
         id: wish.id,
         name: wish.name,
         description: wish.description,
       }
     },
-    editWish (wish) {
+    editWish(wish) {
       this.editIsLoading[wish.id] = true
       if (this.accessToken) {
         this.$store
@@ -356,12 +371,12 @@ export default {
         this.throwAccessDenied()
       }
     },
-    clearAdditionForm () {
+    clearAdditionForm() {
       this.name = ''
       this.description = ''
       this.$refs.wishAdditionForm.resetValidation()
     },
-    async wishAdding () {
+    async wishAdding() {
       this.additionIsLoading = true
       this.addWish({
         name: this.name,
@@ -376,7 +391,20 @@ export default {
           this.additionIsLoading = false
         })
     },
-  },
+    toggleLike(wish) {
+      this.$store.dispatch('wishes/addLike', {
+        connection: wish.id
+      }).then(() => {
+        this.getWishes()
+      })
+    },
+    showLiked(wish) {
+      this.showPeople = true
+      this.$store.dispatch('wishes/peopleLiked', {
+        wish: wish
+      })
+    }
+  }
 }
 </script>
 
