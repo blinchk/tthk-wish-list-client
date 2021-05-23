@@ -219,7 +219,7 @@
             <v-divider/>
             <v-list>
               <v-list-item v-for="like in likes" :key="like.id" class="mx-2">
-                <v-list-item-avatar :color="avatarColor(userFullname(like.user))" size="35">
+                <v-list-item-avatar :color="avatarColor(userFullname(like.user))" size="35" class="justify-center">
                   {{ userInitials(like.user) }} </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title>{{ like.user.firstName }} {{ like.user.lastName }}</v-list-item-title>
