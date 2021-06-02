@@ -10,7 +10,7 @@
             </v-avatar>
             {{ profile.user.firstName }} {{ profile.user.lastName }}
           </v-list>
-          <v-col class="text-right">
+          <v-col :hidden="profile.user.id === this.user.id" class="text-right">
             <v-btn v-if="!profile.following" :loading="followLoading" color="success"
                    @click.stop="followUser(profile.user.id)">
               <v-icon class="mr-1">mdi-account-plus-outline</v-icon>
@@ -98,6 +98,7 @@ export default {
       loading: false,
       showPeople: false,
       followLoading: false,
+      cantfollow: false,
       moment
     }
   },
@@ -105,13 +106,18 @@ export default {
     this.loading = true
   },
   mounted() {
-    this.getUserProfile(this.$route.query.id)
+    if (!this.accessToken) {
+      this.loading = this.checkForToken()
+    } else if (this.user) {
+      this.getUserProfile(this.$route.query.id)
+    }
   },
   computed: {
     ...mapState('users', ['profile']),
     ...mapState('wishes', ['likes']),
     ...mapState(['user', 'accessToken'])
-  },
+  }
+  ,
   methods: {
     ...mapActions(['getUser, checkForToken']),
     ...mapMutations(['createNewAlert']),
@@ -121,31 +127,36 @@ export default {
       }).then(() => {
         this.loading = false
       })
-    },
+    }
+    ,
     userFullname(user) {
       return user.firstName + ' ' + user.lastName
-    },
+    }
+    ,
     userInitials(user) {
       return user.firstName[0] + user.lastName[0]
-    },
+    }
+    ,
     avatarColor(fullName) {
       return randomMC.getColor({text: fullName})
-    },
+    }
+    ,
     toggleLike(wish) {
       this.$store.dispatch('wishes/addLike', {
         connection: wish.id
       }).then(() => {
         this.getUserProfile(this.$route.query.id)
       })
-    },
+    }
+    ,
     showLiked(wish) {
       this.showPeople = true
       this.$store.dispatch('wishes/peopleLiked', {
         wish: wish
       })
-    },
+    }
+    ,
     followUser(user) {
-      this.followLoading = true
       this.$store.dispatch('users/followUser', {
         id: user
       }).then(() => {
@@ -153,6 +164,7 @@ export default {
         this.followLoading = false
       })
     }
+    ,
   }
 }
 </script>
