@@ -55,8 +55,9 @@
                     {{ userInitials(_user) }}
                   </v-avatar>
                 </v-list-item-avatar>
+                <v-card-text v-if="_user.id === user.id" class="d-inline"> You</v-card-text>
+                <v-card-text v-else class="d-inline"> {{ _user.firstName }} {{ _user.lastName }}</v-card-text>
 
-                {{ _user.firstName }} {{ _user.lastName }}
 
               </v-list>
             </nuxt-link>
