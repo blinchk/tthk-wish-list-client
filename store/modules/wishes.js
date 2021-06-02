@@ -3,7 +3,11 @@ const state = () => ({
   likes: null,
 })
 
-const getters = {}
+const getters = {
+  likes(state) {
+    return state.liked
+  }
+}
 
 const actions = {
   getWishes({

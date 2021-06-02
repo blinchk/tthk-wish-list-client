@@ -3,25 +3,24 @@
     <v-col cols="12">
       <v-row class="mb-3 justify-center">
         <v-card elevation="3" max-width="700px" width="700px">
-          <v-form ref="wishAdditionForm" @submit.prevent="wishAdding">
+          <v-form>
             <v-card-title>Who do you want to find?</v-card-title>
             <v-card-text>
               <v-text-field
                 v-model="name"
-                :rules="rules.name"
                 label="Name"
                 type="text"
+                v-on:input="searchUsers(name)"
               ></v-text-field>
             </v-card-text>
             <v-card-actions class="text-right">
               <v-col class="text-right">
                 <v-btn
-                  :disabled="!validWish"
-                  :loading="additionIsLoading"
                   class="text-right"
                   color="success"
                   text
-                  type="submit"
+                  type=""
+
                 >
                   <v-spacer/>
                   <v-icon left> mdi-magnify</v-icon>
@@ -43,17 +42,24 @@
           v-for="_user in users"
           :key="_user.id"
           class="mb-3 justify-center"
+
         >
           <v-card elevation="3" max-width="700px" width="700px">
-            <div>
-              <v-avatar :color="avatarColor(userFullname(_user))"
-                        class="ml-2" size="50"
-              >
-                {{ userInitials(_user) }}
-              </v-avatar>
-              {{ _user.firstName }} {{ _user.lastName }}
-            </div>
-3
+            <nuxt-link id="profile-link" :to="{path: 'user', query: { id: _user.id }}" exact>
+              <v-list>
+
+                <v-list-item-avatar class="ml-2">
+                  <v-avatar :color="avatarColor(userFullname(_user))"
+
+                  >
+                    {{ userInitials(_user) }}
+                  </v-avatar>
+                </v-list-item-avatar>
+
+                {{ _user.firstName }} {{ _user.lastName }}
+
+              </v-list>
+            </nuxt-link>
           </v-card>
         </v-row>
       </template>
@@ -71,22 +77,7 @@ export default {
   data() {
     return {
       loading: false,
-      deleteConfirmation: false,
-      deleteIsLoading: {},
-      showPeople: false,
-      editIsLoading: {},
-      selectedWish: null,
-      wishInEdit: {
-        name: '',
-        description: ''
-      },
-      rules: {
-        name: [(val) => val.length > 0 || 'This field is required!'],
-      },
-      name: '',
-      description: '',
-      additionIsLoading: false,
-      likedUsersIsLoading: false,
+      name: null,
       moment,
     }
   },
@@ -139,12 +130,15 @@ export default {
     avatarColor(fullName) {
       return randomMC.getColor({text: fullName})
     },
-
-
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+#profile-link {
+  color: white;
+  text-decoration: none;
+}
 
 </style>
+

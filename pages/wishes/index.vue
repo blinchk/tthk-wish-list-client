@@ -150,6 +150,17 @@
                   <v-btn v-if="wish.likes" icon @click.stop="showLiked(wish)">
                     {{ wish.likes }}
                   </v-btn>
+                  <v-dialog v-model="showPeople" max-width="500px">
+                    <v-card>
+                      <v-card-title>People who liked this wish...</v-card-title>
+                      <v-card-text v-for="like in likes" :key="like.id">
+                        <v-avatar :color="avatarColor(userFullname(like.user))" class="mr-1" size="35">
+                          {{ userInitials(like.user) }}
+                        </v-avatar>
+                        {{ like.user.firstName }} {{ like.user.lastName }}
+                      </v-card-text>
+                    </v-card>
+                  </v-dialog>
                   <v-btn icon @click.stop="toggleLike(wish)" :color="wish.liked ? 'pink' : 'white' ">
                     <v-icon>mdi-heart</v-icon>
                   </v-btn>
@@ -213,21 +224,6 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-        <v-dialog v-model="showPeople" max-width="500px">
-          <v-card :loading="likedUsersIsLoading">
-            <v-card-title>People, who liked this wish</v-card-title>
-            <v-divider/>
-            <v-list>
-              <v-list-item v-for="like in likes" :key="like.id" class="mx-2">
-                <v-list-item-avatar :color="avatarColor(userFullname(like.user))" size="35" class="justify-center">
-                  {{ userInitials(like.user) }} </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title>{{ like.user.firstName }} {{ like.user.lastName }}</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-card>
-        </v-dialog>
       </template>
       <template v-else-if="!loading && !wishes">
         <v-container>
@@ -265,7 +261,6 @@ export default {
       name: '',
       description: '',
       additionIsLoading: false,
-      likedUsersIsLoading: false,
       moment,
     }
   },
@@ -404,13 +399,9 @@ export default {
       })
     },
     showLiked(wish) {
-      this.$store.commit('wishes/setLikes', []);
       this.showPeople = true
-      this.likedUsersIsLoading = true
       this.$store.dispatch('wishes/peopleLiked', {
         wish: wish
-      }).then(() => {
-        this.likedUsersIsLoading = false
       })
     }
   }
