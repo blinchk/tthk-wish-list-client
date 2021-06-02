@@ -1,5 +1,6 @@
 import wishes from './modules/wishes'
 import profile from './modules/profile'
+import users from './modules/users'
 
 const state = () => ({
   accessToken: null,
@@ -164,7 +165,8 @@ const mutations = {
 
 const modules = {
   wishes,
-  profile
+  profile,
+  users
 }
 
 export default {
