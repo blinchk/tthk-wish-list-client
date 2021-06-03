@@ -45,7 +45,7 @@
 
         >
           <v-card elevation="3" max-width="700px" width="700px">
-            <nuxt-link id="profile-link" :to="{path: 'user', query: { id: _user.id }}" exact>
+            <nuxt-link id="profile-link" :to="{ path: _user.id.toString() }" exact>
               <v-list>
 
                 <v-list-item-avatar class="ml-2">
@@ -57,8 +57,6 @@
                 </v-list-item-avatar>
                 <v-card-text v-if="_user.id === user.id" class="d-inline"> You</v-card-text>
                 <v-card-text v-else class="d-inline"> {{ _user.firstName }} {{ _user.lastName }}</v-card-text>
-
-
               </v-list>
             </nuxt-link>
           </v-card>
