@@ -7,26 +7,12 @@
             <v-card-title>Who do you want to find?</v-card-title>
             <v-card-text>
               <v-text-field
+                prepend-icon="mdi-magnify"
                 v-model="searchQuery"
                 label="Name"
                 type="text"
               ></v-text-field>
             </v-card-text>
-            <v-card-actions class="text-right">
-              <v-col class="text-right">
-                <v-btn
-                  class="text-right"
-                  color="success"
-                  text
-                  type=""
-
-                >
-                  <v-spacer/>
-                  <v-icon left> mdi-magnify</v-icon>
-                  Search
-                </v-btn>
-              </v-col>
-            </v-card-actions>
           </v-form>
         </v-card>
       </v-row>
