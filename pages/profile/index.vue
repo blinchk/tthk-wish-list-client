@@ -7,10 +7,9 @@
             <v-card-title>Who do you want to find?</v-card-title>
             <v-card-text>
               <v-text-field
-                v-model="name"
+                v-model="searchQuery"
                 label="Name"
                 type="text"
-                v-on:input="searchUsers(name)"
               ></v-text-field>
             </v-card-text>
             <v-card-actions class="text-right">
@@ -39,13 +38,13 @@
 
       <template v-else-if="users && user">
         <v-row
-          v-for="_user in users"
+          v-for="_user in searchedUsers"
           :key="_user.id"
           class="mb-3 justify-center"
 
         >
           <v-card elevation="3" max-width="700px" width="700px">
-            <nuxt-link id="profile-link" :to="{ path: _user.id.toString() }" exact>
+            <nuxt-link id="profile-link" :to="{ path: `/profile/${_user.id}` }" exact>
               <v-list>
 
                 <v-list-item-avatar class="ml-2">
@@ -76,7 +75,7 @@ export default {
   data() {
     return {
       loading: false,
-      name: null,
+      searchQuery: '',
       moment,
     }
   },
@@ -115,6 +114,10 @@ export default {
   computed: {
     ...mapState('users', ['users']),
     ...mapState(['user', 'accessToken']),
+    searchedUsers() {
+      if (!this.searchQuery.trim()) return this.users;
+      return this.users.filter(user => this.userFullname(user).toLowerCase().includes(this.searchQuery.trim().toLowerCase()))
+    }
   },
   methods: {
     ...mapActions('users', ['getUsers']),
@@ -128,7 +131,7 @@ export default {
     },
     avatarColor(fullName) {
       return randomMC.getColor({text: fullName})
-    },
+    }
   }
 }
 </script>
