@@ -18,6 +18,7 @@
                 label="Description"
                 type="text"
               ></v-text-field>
+
             </v-card-text>
             <v-card-actions class="text-right">
               <v-col class="text-right">
@@ -38,6 +39,44 @@
           </v-form>
         </v-card>
       </v-row>
+      <v-col cols="12">
+        <v-row class="mb-3 justify-center">
+          <v-card elevation="3" max-width="700px" width="700px">
+            <v-form @submit.prevent="addGift">
+              <v-card-title>Add gift</v-card-title>
+              <v-card-text>
+                <v-select
+                  v-if="wishes"
+                  label="Select wish"
+                  :items="wishes"
+                  item-text="name"
+                  item-value="id"
+                  v-model="wishId"
+                >
+
+                </v-select>
+                <v-text-field
+                  v-model="giftLink"
+                  label="Gift"
+                  type="text"
+                >
+                </v-text-field>
+              </v-card-text>
+              <v-card-actions class="text-right">
+                <v-col class="text-right">
+                  <v-btn
+                    @click.stop="addGift(wishId)"
+                  >
+                    <v-spacer/>
+                    <v-icon left> mdi-gift</v-icon>
+                    <span>Add gift</span>
+                  </v-btn>
+                </v-col>
+              </v-card-actions>
+            </v-form>
+        </v-card>
+        </v-row>
+      </v-col>
       <template v-if="loading">
         <v-row class="justify-center">
           <v-progress-circular color="primary" indeterminate/>
@@ -260,6 +299,9 @@ export default {
       },
       name: '',
       description: '',
+      giftLink: '',
+      wishId:'',
+      items: null,
       additionIsLoading: false,
       moment,
     }
@@ -273,6 +315,7 @@ export default {
     } else if (this.user) {
       this.getWishes()
         .then(() => {
+          this.getGift()
           this.loading = false
         })
         .catch(() => {
@@ -283,6 +326,7 @@ export default {
         .then(() => {
           this.getWishes()
             .then(() => {
+              this.getGift()
               this.loading = false
             })
             .catch(() => {
@@ -296,7 +340,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('wishes', ['wishes', 'likes']),
+    ...mapState('wishes', ['wishes', 'likes', 'gift']),
     ...mapState(['user', 'accessToken']),
     validName: function () {
       return this.wishInEdit.name.length > 0
@@ -391,6 +435,7 @@ export default {
           this.additionIsLoading = false
         })
     },
+
     toggleLike(wish) {
       this.$store.dispatch('wishes/addLike', {
         connection: wish.id
@@ -403,7 +448,16 @@ export default {
       this.$store.dispatch('wishes/peopleLiked', {
         wish: wish
       })
-    }
+    },
+    addGift(){
+      this.$store.dispatch('wishes/addGift',{
+        wish: this.wishId,
+        link: this.gift
+      })
+    },
+    getGift(){
+      this.$store.dispatch('wishes/getGift')
+    },
   }
 }
 </script>
