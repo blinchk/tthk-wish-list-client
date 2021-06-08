@@ -39,44 +39,6 @@
           </v-form>
         </v-card>
       </v-row>
-      <v-col cols="12">
-        <v-row class="mb-3 justify-center">
-          <v-card elevation="3" max-width="700px" width="700px">
-            <v-form @submit.prevent="addGift">
-              <v-card-title>Add gift</v-card-title>
-              <v-card-text>
-                <v-select
-                  v-if="wishes"
-                  label="Select wish"
-                  :items="wishes"
-                  item-text="name"
-                  item-value="id"
-                  v-model="wishId"
-                >
-
-                </v-select>
-                <v-text-field
-                  v-model="giftLink"
-                  label="Gift"
-                  type="text"
-                >
-                </v-text-field>
-              </v-card-text>
-              <v-card-actions class="text-right">
-                <v-col class="text-right">
-                  <v-btn
-                    @click.stop="addGift(wishId)"
-                  >
-                    <v-spacer/>
-                    <v-icon left> mdi-gift</v-icon>
-                    <span>Add gift</span>
-                  </v-btn>
-                </v-col>
-              </v-card-actions>
-            </v-form>
-        </v-card>
-        </v-row>
-      </v-col>
       <template v-if="loading">
         <v-row class="justify-center">
           <v-progress-circular color="primary" indeterminate/>
@@ -200,7 +162,7 @@
                       </v-card-text>
                     </v-card>
                   </v-dialog>
-                  <v-btn icon @click.stop="toggleLike(wish)" :color="wish.liked ? 'pink' : 'white' ">
+                  <v-btn :color="wish.liked ? 'pink' : 'white' " icon @click.stop="toggleLike(wish)">
                     <v-icon>mdi-heart</v-icon>
                   </v-btn>
                 </v-col>
@@ -217,6 +179,11 @@
                 </v-col>
                 <v-col class="text-right" cols="4">
                   <template v-if="wish.user.id === user.id" class="mr-2">
+                    <v-btn :color="wish.gifted ? 'pink' : 'white'" icon @click.stop="openGiftEditing(wish)">
+                      <v-icon>
+                        mdi-gift
+                      </v-icon>
+                    </v-btn>
                     <v-btn
                       :loading="deleteIsLoading[wish.id]"
                       color="error"
@@ -263,6 +230,32 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+        <v-dialog v-model="giftEditing" max-width="500px">
+          <v-card v-if="selectedWish">
+            <v-card-title class="justify-space-between" v-if="selectedWish.gifted"><span>Gift Editing</span> <v-btn icon color="error"><v-icon>mdi-delete</v-icon></v-btn></v-card-title>
+            <v-card-title v-else>Adding Wish</v-card-title>
+            <v-card-text>
+              <v-row class="justify-end">
+                <v-switch v-model="giftWithUrl" label="Link URL to gift"/>
+              </v-row>
+              <v-text-field label="Gift Title"></v-text-field>
+              <v-expand-transition>
+                <v-text-field v-if="giftWithUrl" label="Gift URL"></v-text-field>
+              </v-expand-transition>
+            </v-card-text>
+            <v-card-actions class="justify-end">
+              <v-btn text @click.stop="giftEditing = false">Cancel</v-btn>
+              <v-btn color="primary" v-if="selectedWish.gifted">
+                <v-icon left>mdi-pencil</v-icon>
+                Edit gift
+              </v-btn>
+              <v-btn color="success" v-else>
+                <v-icon left>mdi-plus</v-icon>
+                Add gift
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </template>
       <template v-else-if="!loading && !wishes">
         <v-container>
@@ -276,16 +269,17 @@
 </template>
 
 <script>
-import {mapActions, mapMutations, mapState} from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 import randomMC from 'random-material-color'
 import moment from 'moment'
 
 export default {
   name: 'wishes',
-  data() {
+  data () {
     return {
       loading: false,
       deleteConfirmation: false,
+      giftEditing: false,
       deleteIsLoading: {},
       showPeople: false,
       editIsLoading: {},
@@ -300,16 +294,17 @@ export default {
       name: '',
       description: '',
       giftLink: '',
-      wishId:'',
+      wishId: '',
       items: null,
       additionIsLoading: false,
+      giftWithUrl: false,
       moment,
     }
   },
-  created() {
+  created () {
     this.loading = true
   },
-  mounted() {
+  mounted () {
     if (!this.accessToken) {
       this.loading = this.checkForToken()
     } else if (this.user) {
@@ -353,20 +348,20 @@ export default {
     ...mapActions('wishes', ['getWishes', 'addWish']),
     ...mapActions(['getUser', 'checkForToken']),
     ...mapMutations(['createNewAlert']),
-    userFullname(user) {
+    userFullname (user) {
       return user.firstName + ' ' + user.lastName
     },
-    userInitials(user) {
+    userInitials (user) {
       return user.firstName[0] + user.lastName[0]
     },
-    avatarColor(fullName) {
-      return randomMC.getColor({text: fullName})
+    avatarColor (fullName) {
+      return randomMC.getColor({ text: fullName })
     },
-    openDeletionConfirmation(wish) {
+    openDeletionConfirmation (wish) {
       this.deleteConfirmation = true
       this.selectedWish = wish
     },
-    deleteWish(wish) {
+    deleteWish (wish) {
       this.deleteConfirmation = false
       this.deleteIsLoading[wish.id] = true
       if (this.accessToken) {
@@ -385,15 +380,20 @@ export default {
         this.deleteIsLoading[wish.id] = false
         this.throwAccessDenied()
       }
+      this.selectedWish = null
     },
-    openWishEditing(wish) {
+    openWishEditing (wish) {
       this.wishInEdit = {
         id: wish.id,
         name: wish.name,
         description: wish.description,
       }
     },
-    editWish(wish) {
+    openGiftEditing (wish) {
+      this.selectedWish = wish
+      this.giftEditing = true
+    },
+    editWish (wish) {
       this.editIsLoading[wish.id] = true
       if (this.accessToken) {
         this.$store
@@ -415,12 +415,12 @@ export default {
         this.throwAccessDenied()
       }
     },
-    clearAdditionForm() {
+    clearAdditionForm () {
       this.name = ''
       this.description = ''
       this.$refs.wishAdditionForm.resetValidation()
     },
-    async wishAdding() {
+    async wishAdding () {
       this.additionIsLoading = true
       this.addWish({
         name: this.name,
@@ -436,26 +436,26 @@ export default {
         })
     },
 
-    toggleLike(wish) {
+    toggleLike (wish) {
       this.$store.dispatch('wishes/addLike', {
         connection: wish.id
       }).then(() => {
         this.getWishes()
       })
     },
-    showLiked(wish) {
+    showLiked (wish) {
       this.showPeople = true
       this.$store.dispatch('wishes/peopleLiked', {
         wish: wish
       })
     },
-    addGift(){
-      this.$store.dispatch('wishes/addGift',{
+    toggleGift () {
+      this.$store.dispatch('wishes/addGift', {
         wish: this.wishId,
         link: this.gift
       })
     },
-    getGift(){
+    getGift () {
       this.$store.dispatch('wishes/getGift')
     },
   }

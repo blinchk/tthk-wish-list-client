@@ -42,7 +42,7 @@ const actions = {
       })
     })
   },
-  addWish({commit, rootState}, payload) {
+  toggleGift({commit, rootState}, payload) {
     return new Promise((resolve, reject) => {
       this.$axios.put('api/wish/', {
           'name': payload.name,
