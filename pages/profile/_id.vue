@@ -80,13 +80,13 @@
 
                 </v-col>
               </v-row>
-              <v-tooltip bottom>
+              <v-tooltip bottom v-if="wish.gifted">
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn icon v-bind="attrs" v-on="on" >
                     <v-icon>mdi-gift</v-icon>
                   </v-btn>
                 </template>
-                <span>{{  }}</span>
+                <span>View the gift</span>
               </v-tooltip>
             </v-card-actions>
             <v-divider/>
