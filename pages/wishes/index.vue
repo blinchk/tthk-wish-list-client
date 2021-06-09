@@ -232,24 +232,28 @@
         </v-dialog>
         <v-dialog v-model="giftEditing" max-width="500px">
           <v-card v-if="selectedWish">
-            <v-card-title class="justify-space-between" v-if="selectedWish.gifted"><span>Gift Editing</span> <v-btn icon color="error"><v-icon>mdi-delete</v-icon></v-btn></v-card-title>
+            <v-card-title class="justify-space-between" v-if="selectedWish.gifted"><span>Gift Editing</span>
+              <v-btn icon color="error">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </v-card-title>
             <v-card-title v-else>Adding Wish</v-card-title>
             <v-card-text>
               <v-row class="justify-end">
                 <v-switch v-model="giftWithUrl" label="Link URL to gift"/>
               </v-row>
-              <v-text-field label="Gift Title"></v-text-field>
+              <v-text-field label="Gift Title" v-model="giftTitle"></v-text-field>
               <v-expand-transition>
                 <v-text-field v-if="giftWithUrl" label="Gift URL"></v-text-field>
               </v-expand-transition>
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn text @click.stop="giftEditing = false">Cancel</v-btn>
-              <v-btn color="primary" v-if="selectedWish.gifted">
+              <v-btn color="primary" v-if="selectedWish.gifted" @click.stop="changeGift(selectedWish)">
                 <v-icon left>mdi-pencil</v-icon>
                 Edit gift
               </v-btn>
-              <v-btn color="success" v-else>
+              <v-btn color="success" v-else @click.stop="toggleGift(selectedWish)">
                 <v-icon left>mdi-plus</v-icon>
                 Add gift
               </v-btn>
@@ -269,13 +273,13 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex'
+import {mapActions, mapMutations, mapState} from 'vuex'
 import randomMC from 'random-material-color'
 import moment from 'moment'
 
 export default {
   name: 'wishes',
-  data () {
+  data() {
     return {
       loading: false,
       deleteConfirmation: false,
@@ -293,18 +297,18 @@ export default {
       },
       name: '',
       description: '',
+      giftTitle: '',
       giftLink: '',
-      wishId: '',
       items: null,
       additionIsLoading: false,
       giftWithUrl: false,
       moment,
     }
   },
-  created () {
+  created() {
     this.loading = true
   },
-  mounted () {
+  mounted() {
     if (!this.accessToken) {
       this.loading = this.checkForToken()
     } else if (this.user) {
@@ -335,7 +339,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('wishes', ['wishes', 'likes', 'gift']),
+    ...mapState('wishes', ['wishes', 'likes', 'gifts']),
     ...mapState(['user', 'accessToken']),
     validName: function () {
       return this.wishInEdit.name.length > 0
@@ -348,52 +352,57 @@ export default {
     ...mapActions('wishes', ['getWishes', 'addWish']),
     ...mapActions(['getUser', 'checkForToken']),
     ...mapMutations(['createNewAlert']),
-    userFullname (user) {
+    userFullname(user) {
       return user.firstName + ' ' + user.lastName
     },
-    userInitials (user) {
+    userInitials(user) {
       return user.firstName[0] + user.lastName[0]
     },
-    avatarColor (fullName) {
-      return randomMC.getColor({ text: fullName })
+    avatarColor(fullName) {
+      return randomMC.getColor({text: fullName})
     },
-    openDeletionConfirmation (wish) {
+    openDeletionConfirmation(wish) {
       this.deleteConfirmation = true
       this.selectedWish = wish
     },
-    deleteWish (wish) {
+    deleteWish(wish) {
       this.deleteConfirmation = false
       this.deleteIsLoading[wish.id] = true
       if (this.accessToken) {
-        this.$store
-          .dispatch('wishes/deleteWish', {
-            wish: wish,
-          })
-          .then(() => {
-            this.deleteIsLoading[wish.id] = false
-            this.getWishes()
-          })
-          .catch(() => {
-            this.deleteIsLoading[wish.id] = false
-          })
+        this.$store.dispatch('wishes/deleteGift',{
+          wish: wish.id
+        }).then(()=>{
+          this.$store
+            .dispatch('wishes/deleteWish', {
+              wish: wish,
+            })
+            .then(() => {
+              this.deleteIsLoading[wish.id] = false
+              this.getWishes()
+            })
+            .catch(() => {
+              this.deleteIsLoading[wish.id] = false
+            })
+        })
+
       } else {
         this.deleteIsLoading[wish.id] = false
         this.throwAccessDenied()
       }
       this.selectedWish = null
     },
-    openWishEditing (wish) {
+    openWishEditing(wish) {
       this.wishInEdit = {
         id: wish.id,
         name: wish.name,
         description: wish.description,
       }
     },
-    openGiftEditing (wish) {
+    openGiftEditing(wish) {
       this.selectedWish = wish
       this.giftEditing = true
     },
-    editWish (wish) {
+    editWish(wish) {
       this.editIsLoading[wish.id] = true
       if (this.accessToken) {
         this.$store
@@ -415,12 +424,12 @@ export default {
         this.throwAccessDenied()
       }
     },
-    clearAdditionForm () {
+    clearAdditionForm() {
       this.name = ''
       this.description = ''
       this.$refs.wishAdditionForm.resetValidation()
     },
-    async wishAdding () {
+    async wishAdding() {
       this.additionIsLoading = true
       this.addWish({
         name: this.name,
@@ -436,26 +445,39 @@ export default {
         })
     },
 
-    toggleLike (wish) {
+    toggleLike(wish) {
       this.$store.dispatch('wishes/addLike', {
         connection: wish.id
       }).then(() => {
         this.getWishes()
       })
     },
-    showLiked (wish) {
+    showLiked(wish) {
       this.showPeople = true
       this.$store.dispatch('wishes/peopleLiked', {
         wish: wish
       })
     },
-    toggleGift () {
+    toggleGift(wish) {
       this.$store.dispatch('wishes/addGift', {
-        wish: this.wishId,
-        link: this.gift
+        wish: wish.id,
+        title: this.giftTitle,
+        link: this.giftLink
+      }).then(() => {
+        this.getWishes()
+        this.giftEditing = false
       })
     },
-    getGift () {
+    changeGift() {
+      this.$store.dispatch('wishes/changeGift', {
+        title: this.giftTitle,
+        link: this.giftLink
+      }).then(() => {
+        this.getWishes()
+        this.giftEditing = false
+      })
+    },
+    getGift() {
       this.$store.dispatch('wishes/getGift')
     },
   }
