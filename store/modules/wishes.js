@@ -260,9 +260,9 @@ const actions = {
       })
     })
   },
-  getGifts({commit, rootState}) {
+  getGifts({commit, rootState}, payload) {
     return new Promise((resolve, reject) => {
-      this.$axios.get('api/wish/gift/' + rootState.user.id,
+      this.$axios.get('api/wish/gift/' + payload.user,
         {
           headers: {
             'Token': rootState.accessToken

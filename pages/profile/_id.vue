@@ -72,11 +72,22 @@
                       </v-card-text>
                     </v-card>
                   </v-dialog>
+
+
                   <v-btn :color="wish.liked ? 'pink' : 'white' " icon @click.stop="toggleLike(wish)">
                     <v-icon>mdi-heart</v-icon>
                   </v-btn>
+
                 </v-col>
               </v-row>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn icon v-bind="attrs" v-on="on" >
+                    <v-icon>mdi-gift</v-icon>
+                  </v-btn>
+                </template>
+                <span>{{  }}</span>
+              </v-tooltip>
             </v-card-actions>
             <v-divider/>
           </v-card>
@@ -110,11 +121,12 @@ export default {
       this.loading = this.checkForToken()
     } else if (this.user) {
       this.getUserProfile(this.$route.params.id)
+      this.getGifts(this.$route.params.id)
     }
   },
   computed: {
     ...mapState('users', ['profile']),
-    ...mapState('wishes', ['likes']),
+    ...mapState('wishes', ['likes', 'gifts']),
     ...mapState(['user', 'accessToken'])
   }
   ,
@@ -163,8 +175,12 @@ export default {
         this.getUserProfile(this.$route.params.id)
         this.followLoading = false
       })
+    },
+    getGifts(user) {
+      this.$store.dispatch('wishes/getGifts', {
+        user: user
+      })
     }
-    ,
   }
 }
 </script>

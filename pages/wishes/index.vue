@@ -372,8 +372,9 @@ export default {
       if (this.accessToken) {
         if (wish.gifted) {
           this.$store.dispatch('wishes/deleteGift', {
-            wish: wish.id
+            wish: wish
           }).then(() => {
+            this.getWishes()
             this.$store
               .dispatch('wishes/deleteWish', {
                 wish: wish,
