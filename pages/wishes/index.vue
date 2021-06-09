@@ -244,12 +244,12 @@
               </v-row>
               <v-text-field label="Gift Title" v-model="giftTitle"></v-text-field>
               <v-expand-transition>
-                <v-text-field v-if="giftWithUrl" label="Gift URL"></v-text-field>
+                <v-text-field v-if="giftWithUrl" v-model="giftLink" label="Gift URL"></v-text-field>
               </v-expand-transition>
             </v-card-text>
             <v-card-actions class="justify-end">
-              <v-btn text @click.stop="giftEditing = false">Cancel</v-btn>
-              <v-btn color="primary" v-if="selectedWish.gifted" @click.stop="changeGift(selectedWish)">
+              <v-btn text @click.stop="giftEditing = false; cleanGiftFields()">Cancel</v-btn>
+              <v-btn color="primary" v-if="selectedWish.gifted" @click.stop="changeGift()">
                 <v-icon left>mdi-pencil</v-icon>
                 Edit gift
               </v-btn>
@@ -299,7 +299,7 @@ export default {
       description: '',
       giftTitle: '',
       giftLink: '',
-      selectedGift: null,
+      selectedGift: '',
       items: null,
       additionIsLoading: false,
       giftWithUrl: false,
@@ -340,7 +340,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('wishes', ['wishes', 'likes', 'gifts']),
+    ...mapState('wishes', ['wishes', 'likes', 'gift']),
     ...mapState(['user', 'accessToken']),
     validName: function () {
       return this.wishInEdit.name.length > 0
@@ -415,6 +415,10 @@ export default {
     openGiftEditing(wish) {
       this.selectedWish = wish
       this.giftEditing = true
+      if(wish.gifted){
+        this.getGiftByWish(wish)
+      }
+
     },
     editWish(wish) {
       this.editIsLoading[wish.id] = true
@@ -474,13 +478,14 @@ export default {
     },
     toggleGift(wish) {
       this.$store.dispatch('wishes/addGift', {
-        wish: wish.id,
+        wish: wish,
         title: this.giftTitle,
         link: this.giftLink
       }).then(() => {
         this.giftEditing = false
         this.getWishes()
         this.getGifts()
+        this.cleanGiftFields()
       })
     },
     changeGift() {
@@ -492,16 +497,35 @@ export default {
         this.giftEditing = false
         this.getWishes()
         this.getGifts()
+        this.cleanGiftFields()
       })
     },
     deleteGift(wish) {
       this.$store.dispatch('wishes/deleteGift', {
-        wish: wish.id
+        wish: wish
       }).then(() => {
         this.giftEditing = false
         this.getWishes()
         this.getGifts()
+        this.cleanGiftFields()
       })
+    },
+    getGiftByWish(wish){
+      this.$store.dispatch('wishes/getGiftByWish',{
+        wish: wish
+      }).then( gift =>{
+        this.selectedGift = gift.id
+        this.giftTitle = gift.title
+        if(gift.link){
+          this.giftLink = gift.link
+          this.giftWithUrl = true
+        }
+
+      })
+    },
+    cleanGiftFields(){
+      this.giftLink = ''
+      this.giftTitle = ''
     }
   }
 }
