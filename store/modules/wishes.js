@@ -8,9 +8,6 @@ const getters = {
   likes(state) {
     return state.liked
   },
-  wishes(state) {
-    return state.gifted
-  }
 }
 
 const actions = {
@@ -45,7 +42,7 @@ const actions = {
       })
     })
   },
-  toggleGift({commit, rootState}, payload) {
+  addWish({commit, rootState}, payload) {
     return new Promise((resolve, reject) => {
       this.$axios.put('api/wish/', {
           'name': payload.name,
@@ -262,7 +259,7 @@ const actions = {
       })
     })
   },
-  getGift({commit, rootState}) {
+  getGifts({commit, rootState}) {
     return new Promise((resolve, reject) => {
       this.$axios.get('api/wish/gift/' + rootState.user.id,
         {
@@ -294,7 +291,7 @@ const actions = {
   changeGift({commit, rootState}, payload) {
     return new Promise((resolve, reject) => {
       this.$axios.patch('api/wish/gift/', {
-          'id': payload.wish,
+          'id': payload.gift,
           'title': payload.title,
           'link': payload.link
         },

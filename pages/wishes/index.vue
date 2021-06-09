@@ -233,7 +233,7 @@
         <v-dialog v-model="giftEditing" max-width="500px">
           <v-card v-if="selectedWish">
             <v-card-title class="justify-space-between" v-if="selectedWish.gifted"><span>Gift Editing</span>
-              <v-btn icon color="error">
+              <v-btn icon color="error" @click.stop="deleteGift(selectedWish)">
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </v-card-title>
@@ -299,6 +299,7 @@ export default {
       description: '',
       giftTitle: '',
       giftLink: '',
+      selectedGift: null,
       items: null,
       additionIsLoading: false,
       giftWithUrl: false,
@@ -314,7 +315,7 @@ export default {
     } else if (this.user) {
       this.getWishes()
         .then(() => {
-          this.getGift()
+          this.getGifts()
           this.loading = false
         })
         .catch(() => {
@@ -325,7 +326,7 @@ export default {
         .then(() => {
           this.getWishes()
             .then(() => {
-              this.getGift()
+              this.getGifts()
               this.loading = false
             })
             .catch(() => {
@@ -349,7 +350,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('wishes', ['getWishes', 'addWish']),
+    ...mapActions('wishes', ['getWishes', 'getGifts', 'addWish']),
     ...mapActions(['getUser', 'checkForToken']),
     ...mapMutations(['createNewAlert']),
     userFullname(user) {
@@ -369,9 +370,23 @@ export default {
       this.deleteConfirmation = false
       this.deleteIsLoading[wish.id] = true
       if (this.accessToken) {
-        this.$store.dispatch('wishes/deleteGift',{
-          wish: wish.id
-        }).then(()=>{
+        if (wish.gifted) {
+          this.$store.dispatch('wishes/deleteGift', {
+            wish: wish.id
+          }).then(() => {
+            this.$store
+              .dispatch('wishes/deleteWish', {
+                wish: wish,
+              })
+              .then(() => {
+                this.deleteIsLoading[wish.id] = false
+                this.getWishes()
+              })
+              .catch(() => {
+                this.deleteIsLoading[wish.id] = false
+              })
+          })
+        } else {
           this.$store
             .dispatch('wishes/deleteWish', {
               wish: wish,
@@ -383,8 +398,7 @@ export default {
             .catch(() => {
               this.deleteIsLoading[wish.id] = false
             })
-        })
-
+        }
       } else {
         this.deleteIsLoading[wish.id] = false
         this.throwAccessDenied()
@@ -464,22 +478,31 @@ export default {
         title: this.giftTitle,
         link: this.giftLink
       }).then(() => {
-        this.getWishes()
         this.giftEditing = false
+        this.getWishes()
+        this.getGifts()
       })
     },
     changeGift() {
       this.$store.dispatch('wishes/changeGift', {
+        id: this.selectedGift,
         title: this.giftTitle,
         link: this.giftLink
       }).then(() => {
-        this.getWishes()
         this.giftEditing = false
+        this.getWishes()
+        this.getGifts()
       })
     },
-    getGift() {
-      this.$store.dispatch('wishes/getGift')
-    },
+    deleteGift(wish) {
+      this.$store.dispatch('wishes/deleteGift', {
+        wish: wish.id
+      }).then(() => {
+        this.giftEditing = false
+        this.getWishes()
+        this.getGifts()
+      })
+    }
   }
 }
 </script>
