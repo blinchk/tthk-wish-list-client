@@ -29,11 +29,11 @@
           class="mb-3 justify-center"
 
         >
-          <v-card elevation="3" max-width="700px" width="700px">
+          <v-card elevation="3" max-width="700px" width="700px" class="px-3">
             <nuxt-link id="profile-link" :to="{ path: `/profile/${_user.id}` }" exact>
               <v-list>
 
-                <v-list-item-avatar class="ml-2">
+                <v-list-item-avatar class="mx-2">
                   <v-avatar :color="avatarColor(userFullname(_user))"
 
                   >

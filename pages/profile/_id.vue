@@ -5,8 +5,8 @@
         <v-card v-if="!loading" :loading="loading" elevation="3" max-width="700px" width="700px">
           <v-card-title>User info</v-card-title>
           <v-list>
-            <v-avatar :color="avatarColor(userFullname(profile.user))" class="ml-3" size="70">
-              {{ userInitials(profile.user) }}
+            <v-avatar :color="avatarColor(userFullname(profile.user))" class="mx-3" size="70">
+              <h2>{{ userInitials(profile.user) }}</h2>
             </v-avatar>
             {{ profile.user.firstName }} {{ profile.user.lastName }}
           </v-list>
@@ -86,7 +86,7 @@
                     <v-icon>mdi-gift</v-icon>
                   </v-btn>
                 </template>
-                <span>View the gift</span>
+                <span>Book the gift.</span>
               </v-tooltip>
             </v-card-actions>
             <v-divider/>
