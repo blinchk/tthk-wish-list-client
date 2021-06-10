@@ -82,7 +82,7 @@
               </v-row>
               <v-tooltip bottom v-if="wish.gifted">
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn icon v-bind="attrs" v-on="on" v-if="profile.user.id !== user.id">
+                  <v-btn icon v-bind="attrs" v-on="on" v-if="profile.user.id !== user.id" @click.stop="bookGift(wish)">
                     <v-icon>mdi-gift</v-icon>
                   </v-btn>
                 </template>
@@ -179,6 +179,14 @@ export default {
     getGifts(user) {
       this.$store.dispatch('wishes/getGifts', {
         user: user
+      })
+    },
+    bookGift(wish){
+      this.$store.dispatch('wishes/bookGift',{
+        wish: wish
+      }).then(()=>{
+        this.getUserProfile(this.$route.params.id)
+        this.getGifts(this.$route.params.id)
       })
     }
   }
