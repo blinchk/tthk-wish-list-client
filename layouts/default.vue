@@ -84,6 +84,13 @@ export default {
           authorized: true,
           admin: false
         },
+        {
+          icon: ' mdi-account-multiple',
+          title: 'Users',
+          to: '/profile/',
+          authorized: true,
+          admin: false
+        },
       ],
       title: 'Wish List'
     }

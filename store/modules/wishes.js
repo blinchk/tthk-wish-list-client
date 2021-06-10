@@ -1,9 +1,15 @@
 const state = () => ({
   wishes: null,
   likes: null,
+  gifts: null,
+  gift: null
 })
 
-const getters = {}
+const getters = {
+  likes(state) {
+    return state.liked
+  },
+}
 
 const actions = {
   getWishes({
@@ -211,6 +217,213 @@ const actions = {
       })
 
     })
+  },
+  addGift({commit, rootState}, payload) {
+    return new Promise((resolve, reject) => {
+      this.$axios.post('api/wish/gift/' + payload.wish.id, {
+          'title': payload.title,
+          'link': payload.link
+        },
+        {
+          headers: {
+            'Token': rootState.accessToken
+          }
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            if (response.data.gift) {
+              commit('createNewAlert', {
+                'text': 'Gift added',
+                'color': 'success'
+              }, {root: true})
+            } else {
+              commit('createNewAlert', {
+                'text': 'Gift removed',
+                'color': 'success'
+              }, {root: true})
+            }
+            resolve()
+          }
+        }).catch((error) => {
+        if (error.response.data.error) {
+          commit('createNewAlert', {
+            'text': error.response.data.error,
+            'color': 'error'
+          }, {root: true})
+        } else {
+          commit('createNewAlert', {
+            'text': error,
+            'color': 'error'
+          }, {root: true})
+        }
+        reject(error)
+      })
+    })
+  },
+  getGifts({commit, rootState}, payload) {
+    return new Promise((resolve, reject) => {
+      this.$axios.get('api/wish/gift/' + payload.user,
+        {
+          headers: {
+            'Token': rootState.accessToken
+          }
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            commit('setGifts', response.data.gift)
+            resolve(response.data.gift)
+          }
+        }).catch((error) => {
+        if (error.response.data.error) {
+          commit('createNewAlert', {
+            'text': error.response.data.error,
+            'color': 'error'
+          }, {root: true})
+        } else {
+          commit('createNewAlert', {
+            'text': error,
+            'color': 'error'
+          }, {root: true})
+        }
+        reject(error)
+      })
+    })
+  },
+  changeGift({commit, rootState}, payload) {
+    return new Promise((resolve, reject) => {
+      this.$axios.patch('api/wish/gift/', {
+          'id': payload.id,
+          'title': payload.title,
+          'link': payload.link
+        },
+        {
+          headers: {
+            'Token': rootState.accessToken
+          }
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            commit('createNewAlert', {
+              'text': 'Gift changed',
+              'color': 'success'
+            }, {root: true})
+            resolve()
+          }
+        }).catch((error) => {
+        if (error.response.data.error) {
+          commit('createNewAlert', {
+            'text': error.response.data.error,
+            'color': 'error'
+          }, {root: true})
+        } else {
+          commit('createNewAlert', {
+            'text': error,
+            'color': 'error'
+          }, {root: true})
+        }
+        reject(error)
+      })
+    })
+  },
+  deleteGift({commit, rootState}, payload) {
+    return new Promise((resolve, reject) => {
+      this.$axios.post('api/wish/gift/' + payload.wish.id, {},
+        {
+          headers: {
+            'Token': rootState.accessToken
+          }
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            commit('createNewAlert', {
+              'text': 'Gift deleted',
+              'color': 'success'
+            }, {root: true})
+            resolve()
+          }
+        }).catch((error) => {
+        if (error.response.data.error) {
+          commit('createNewAlert', {
+            'text': error.response.data.error,
+            'color': 'error'
+          }, {root: true})
+        } else {
+          commit('createNewAlert', {
+            'text': error,
+            'color': 'error'
+          }, {root: true})
+        }
+        reject(error)
+      })
+    })
+  },
+  getGiftByWish({commit, rootState}, payload) {
+    return new Promise((resolve, reject) => {
+      this.$axios.get('api/wish/' + payload.wish.id + '/gift',
+        {
+          headers: {
+            'Token': rootState.accessToken
+          }
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            commit('setGift', response.data.gift)
+            resolve(response.data.gift)
+          }
+        }).catch((error) => {
+        if (error.response.data.error) {
+          commit('createNewAlert', {
+            'text': error.response.data.error,
+            'color': 'error'
+          }, {root: true})
+        } else {
+          commit('createNewAlert', {
+            'text': error,
+            'color': 'error'
+          }, {root: true})
+        }
+        reject(error)
+      })
+    })
+  },
+  bookGift({commit, rootState}, payload) {
+    return new Promise((resolve, reject) => {
+      this.$axios.post('api/wish/gift/' + payload.wish.id + '/book',
+        {}, {
+          headers: {
+            'Token': rootState.accessToken
+          }
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            if (response.data.booked)
+              commit('createNewAlert', {
+                color: 'success',
+                text: 'Gift booked'
+              }, {root: true})
+            else {
+              commit('createNewAlert', {
+                color: 'success',
+                text: 'Gift unbooked'
+              }, {root: true})
+            }
+            resolve()
+          }
+        }).catch((error) => {
+        if (error.response.data.error) {
+          commit('createNewAlert', {
+            'text': error.response.data.error,
+            'color': 'error'
+          }, {root: true})
+        } else {
+          commit('createNewAlert', {
+            'text': error,
+            'color': 'error'
+          }, {root: true})
+        }
+        reject(error)
+      })
+    })
   }
 }
 
@@ -220,6 +433,12 @@ const mutations = {
   },
   setLikes(state, payload) {
     state.likes = payload
+  },
+  setGifts(state, payload) {
+    state.gifts = payload
+  },
+  setGift(state, payload) {
+    state.gift = payload
   }
 }
 

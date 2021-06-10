@@ -18,6 +18,7 @@
                 label="Description"
                 type="text"
               ></v-text-field>
+
             </v-card-text>
             <v-card-actions class="text-right">
               <v-col class="text-right">
@@ -150,7 +151,18 @@
                   <v-btn v-if="wish.likes" icon @click.stop="showLiked(wish)">
                     {{ wish.likes }}
                   </v-btn>
-                  <v-btn icon @click.stop="toggleLike(wish)" :color="wish.liked ? 'pink' : 'white' ">
+                  <v-dialog v-model="showPeople" max-width="500px">
+                    <v-card>
+                      <v-card-title>People who liked this wish...</v-card-title>
+                      <v-card-text v-for="like in likes" :key="like.id">
+                        <v-avatar :color="avatarColor(userFullname(like.user))" class="mr-1" size="35">
+                          {{ userInitials(like.user) }}
+                        </v-avatar>
+                        {{ like.user.firstName }} {{ like.user.lastName }}
+                      </v-card-text>
+                    </v-card>
+                  </v-dialog>
+                  <v-btn :color="wish.liked ? 'pink' : 'white' " icon @click.stop="toggleLike(wish)">
                     <v-icon>mdi-heart</v-icon>
                   </v-btn>
                 </v-col>
@@ -167,6 +179,11 @@
                 </v-col>
                 <v-col class="text-right" cols="4">
                   <template v-if="wish.user.id === user.id" class="mr-2">
+                    <v-btn :color="wish.gifted ? 'pink' : 'white'" icon @click.stop="openGiftEditing(wish)">
+                      <v-icon>
+                        mdi-gift
+                      </v-icon>
+                    </v-btn>
                     <v-btn
                       :loading="deleteIsLoading[wish.id]"
                       color="error"
@@ -213,19 +230,34 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-        <v-dialog v-model="showPeople" max-width="500px">
-          <v-card :loading="likedUsersIsLoading">
-            <v-card-title>People, who liked this wish</v-card-title>
-            <v-divider/>
-            <v-list>
-              <v-list-item v-for="like in likes" :key="like.id" class="mx-2">
-                <v-list-item-avatar :color="avatarColor(userFullname(like.user))" size="35" class="justify-center">
-                  {{ userInitials(like.user) }} </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title>{{ like.user.firstName }} {{ like.user.lastName }}</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
+        <v-dialog v-model="giftEditing" max-width="500px">
+          <v-card v-if="selectedWish">
+            <v-card-title class="justify-space-between" v-if="selectedWish.gifted"><span>Gift Editing</span>
+              <v-btn icon color="error" @click.stop="deleteGift(selectedWish)">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </v-card-title>
+            <v-card-title v-else>Adding Wish</v-card-title>
+            <v-card-text>
+              <v-row class="justify-end">
+                <v-switch v-model="giftWithUrl" label="Link URL to gift"/>
+              </v-row>
+              <v-text-field label="Gift Title" v-model="giftTitle"></v-text-field>
+              <v-expand-transition>
+                <v-text-field v-if="giftWithUrl" v-model="giftLink" label="Gift URL"></v-text-field>
+              </v-expand-transition>
+            </v-card-text>
+            <v-card-actions class="justify-end">
+              <v-btn text @click.stop="giftEditing = false; cleanGiftFields()">Cancel</v-btn>
+              <v-btn color="primary" v-if="selectedWish.gifted" @click.stop="changeGift()">
+                <v-icon left>mdi-pencil</v-icon>
+                Edit gift
+              </v-btn>
+              <v-btn color="success" v-else @click.stop="toggleGift(selectedWish)">
+                <v-icon left>mdi-plus</v-icon>
+                Add gift
+              </v-btn>
+            </v-card-actions>
           </v-card>
         </v-dialog>
       </template>
@@ -251,6 +283,7 @@ export default {
     return {
       loading: false,
       deleteConfirmation: false,
+      giftEditing: false,
       deleteIsLoading: {},
       showPeople: false,
       editIsLoading: {},
@@ -264,8 +297,12 @@ export default {
       },
       name: '',
       description: '',
+      giftTitle: '',
+      giftLink: '',
+      selectedGift: '',
+      items: null,
       additionIsLoading: false,
-      likedUsersIsLoading: false,
+      giftWithUrl: false,
       moment,
     }
   },
@@ -301,7 +338,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('wishes', ['wishes', 'likes']),
+    ...mapState('wishes', ['wishes', 'likes', 'gift']),
     ...mapState(['user', 'accessToken']),
     validName: function () {
       return this.wishInEdit.name.length > 0
@@ -311,7 +348,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('wishes', ['getWishes', 'addWish']),
+    ...mapActions('wishes', ['getWishes', 'getGifts', 'addWish']),
     ...mapActions(['getUser', 'checkForToken']),
     ...mapMutations(['createNewAlert']),
     userFullname(user) {
@@ -346,6 +383,7 @@ export default {
         this.deleteIsLoading[wish.id] = false
         this.throwAccessDenied()
       }
+      this.selectedWish = null
     },
     openWishEditing(wish) {
       this.wishInEdit = {
@@ -353,6 +391,14 @@ export default {
         name: wish.name,
         description: wish.description,
       }
+    },
+    openGiftEditing(wish) {
+      this.selectedWish = wish
+      this.giftEditing = true
+      if(wish.gifted){
+        this.getGiftByWish(wish)
+      }
+
     },
     editWish(wish) {
       this.editIsLoading[wish.id] = true
@@ -396,6 +442,7 @@ export default {
           this.additionIsLoading = false
         })
     },
+
     toggleLike(wish) {
       this.$store.dispatch('wishes/addLike', {
         connection: wish.id
@@ -404,14 +451,58 @@ export default {
       })
     },
     showLiked(wish) {
-      this.$store.commit('wishes/setLikes', []);
       this.showPeople = true
-      this.likedUsersIsLoading = true
       this.$store.dispatch('wishes/peopleLiked', {
         wish: wish
-      }).then(() => {
-        this.likedUsersIsLoading = false
       })
+    },
+    toggleGift(wish) {
+      this.$store.dispatch('wishes/addGift', {
+        wish: wish,
+        title: this.giftTitle,
+        link: this.giftLink
+      }).then(() => {
+        this.giftEditing = false
+        this.getWishes()
+        this.cleanGiftFields()
+      })
+    },
+    changeGift() {
+      this.$store.dispatch('wishes/changeGift', {
+        id: this.selectedGift,
+        title: this.giftTitle,
+        link: this.giftLink
+      }).then(() => {
+        this.giftEditing = false
+        this.getWishes()
+        this.cleanGiftFields()
+      })
+    },
+    deleteGift(wish) {
+      this.$store.dispatch('wishes/deleteGift', {
+        wish: wish
+      }).then(() => {
+        this.giftEditing = false
+        this.getWishes()
+        this.cleanGiftFields()
+      })
+    },
+    getGiftByWish(wish){
+      this.$store.dispatch('wishes/getGiftByWish',{
+        wish: wish
+      }).then( gift =>{
+        this.selectedGift = gift.id
+        this.giftTitle = gift.title
+        if(gift.link){
+          this.giftLink = gift.link
+          this.giftWithUrl = true
+        }
+
+      })
+    },
+    cleanGiftFields(){
+      this.giftLink = ''
+      this.giftTitle = ''
     }
   }
 }
