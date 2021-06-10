@@ -109,7 +109,6 @@ export default {
       loading: false,
       showPeople: false,
       followLoading: false,
-      cantfollow: false,
       moment
     }
   },
