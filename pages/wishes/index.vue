@@ -368,36 +368,17 @@ export default {
       this.deleteConfirmation = false
       this.deleteIsLoading[wish.id] = true
       if (this.accessToken) {
-        if (wish.gifted) {
-          this.$store.dispatch('wishes/deleteGift', {
-            wish: wish
-          }).then(() => {
-            this.getWishes()
-            this.$store
-              .dispatch('wishes/deleteWish', {
-                wish: wish,
-              })
-              .then(() => {
-                this.deleteIsLoading[wish.id] = false
-                this.getWishes()
-              })
-              .catch(() => {
-                this.deleteIsLoading[wish.id] = false
-              })
+        this.$store
+          .dispatch('wishes/deleteWish', {
+            wish: wish,
           })
-        } else {
-          this.$store
-            .dispatch('wishes/deleteWish', {
-              wish: wish,
-            })
-            .then(() => {
-              this.deleteIsLoading[wish.id] = false
-              this.getWishes()
-            })
-            .catch(() => {
-              this.deleteIsLoading[wish.id] = false
-            })
-        }
+          .then(() => {
+            this.deleteIsLoading[wish.id] = false
+            this.getWishes()
+          })
+          .catch(() => {
+            this.deleteIsLoading[wish.id] = false
+          })
       } else {
         this.deleteIsLoading[wish.id] = false
         this.throwAccessDenied()
