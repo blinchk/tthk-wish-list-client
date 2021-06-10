@@ -315,7 +315,6 @@ export default {
     } else if (this.user) {
       this.getWishes()
         .then(() => {
-          this.getGifts()
           this.loading = false
         })
         .catch(() => {
@@ -326,7 +325,6 @@ export default {
         .then(() => {
           this.getWishes()
             .then(() => {
-              this.getGifts()
               this.loading = false
             })
             .catch(() => {
@@ -485,7 +483,6 @@ export default {
       }).then(() => {
         this.giftEditing = false
         this.getWishes()
-        this.getGifts()
         this.cleanGiftFields()
       })
     },
@@ -497,7 +494,6 @@ export default {
       }).then(() => {
         this.giftEditing = false
         this.getWishes()
-        this.getGifts()
         this.cleanGiftFields()
       })
     },
@@ -507,7 +503,6 @@ export default {
       }).then(() => {
         this.giftEditing = false
         this.getWishes()
-        this.getGifts()
         this.cleanGiftFields()
       })
     },

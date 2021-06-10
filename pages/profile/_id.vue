@@ -82,7 +82,7 @@
               </v-row>
               <v-tooltip bottom v-if="wish.gifted">
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn icon v-bind="attrs" v-on="on" >
+                  <v-btn icon v-bind="attrs" v-on="on" v-if="profile.user.id !== user.id">
                     <v-icon>mdi-gift</v-icon>
                   </v-btn>
                 </template>

@@ -327,7 +327,8 @@ const actions = {
   },
   deleteGift({commit, rootState}, payload) {
     return new Promise((resolve, reject) => {
-      this.$axios.post('api/wish/gift/' + payload.wish.id, {},
+      this.$axios.post('api/wish/gift/' + payload.wish.id, {
+        },
         {
           headers: {
             'Token': rootState.accessToken
