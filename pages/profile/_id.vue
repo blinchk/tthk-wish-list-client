@@ -97,7 +97,7 @@
           <v-dialog v-model="giftDialogOpen" max-width="500px">
             <v-card v-if="currentGift">
               <v-card-title>{{ currentGift.title }}</v-card-title>
-              <v-card-text><a :href="currentGift.link">Link to gift</a></v-card-text>
+              <v-card-text v-if="currentGift.link"><a :href="currentGift.link">Link to gift</a></v-card-text>
               <v-card-actions class="justify-end">
                 <v-btn v-if="!currentGift.user_booked.id" :loading="bookingIsLoading" color="success" text
                        @click.stop="bookGift(currentGift.wish)"
