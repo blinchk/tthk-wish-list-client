@@ -399,7 +399,7 @@ const actions = {
             if (response.data.booked)
               commit('createNewAlert', {
                 color: 'success',
-                text: 'Wish booked'
+                text: 'Gift booked'
               }, {root: true})
             else {
               commit('createNewAlert', {
